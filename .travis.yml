@@ -1,16 +1,25 @@
-os: linux
-language: dart
-dist: xenial
-addons:
-  apt:
-    packages:
-    - lib32stdc++6
-install:
-- git clone https://github.com/flutter/flutter.git
-- ./flutter/bin/flutter doctor
-script:
-- cd app
-- ../flutter/bin/flutter test
-cache:
-  directories:
-  - $HOME/.pub-cache
+os:
+    - linux
+  sudo: false
+  addons:
+    apt:
+      sources:
+        - ubuntu-toolchain-r-test
+      packages:
+        - libstdc++6
+        - fonts-noto
+  git:
+    depth: 3
+  before_script:
+    - git clone https://github.com/flutter/flutter.git
+    - ./flutter/bin/flutter doctor
+  script:
+    - cd app
+    - ../flutter/bin/flutter analyze
+    - ../flutter/bin/flutter format -n --set-exit-if-changed .
+    - ../flutter/bin/flutter test
+  cache:
+    directories:
+      - $HOME/shared/.pub-cache
+    branches:
+    only: [master, develop]
