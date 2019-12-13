@@ -12,15 +12,17 @@ addons:
         - libstdc++6
         - fonts-droid
 install:
-    - echo 'Testing SplitterFlutter'
+    - echo 'Testing $TRAVIS_BUILD_DIR'
 before_script:
     - cd ..
     - git clone https://github.com/flutter/flutter.git -b stable
     - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
     - flutter doctor
 script:
-    - cd SplitterFlutter
+    - cd $TRAVIS_BUILD_DIR
+    - echo 'Running linter analasis...'
     - flutter analyze
+    - echo 'Running tests...'
     - flutter test
 cache:
     directories:
