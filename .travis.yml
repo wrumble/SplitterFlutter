@@ -14,18 +14,13 @@ addons:
 install:
     - echo 'Testing SplitterFlutter'
 before_script:
-    - ls
     - cd ..
-    - ls
     - git clone https://github.com/flutter/flutter.git -b stable
-    - ls
     - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
     - flutter doctor
 script:
-    - ls
     - cd SplitterFlutter
-    - ls
-    - flutter analyze --no-pub --no-current-package
+    - flutter analyze
     - flutter test
 cache:
     directories:
