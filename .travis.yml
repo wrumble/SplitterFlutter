@@ -13,7 +13,7 @@ addons:
         - fonts-droid
 install:
     - eval BUILD_DIR=\$${TRAVIS_BUILD_DIR}
-    - echo 'Testing $BUILD_DIR'
+    - echo 'Testing {$BUILD_DIR}'
 before_script:
     - cd ..
     - git clone https://github.com/flutter/flutter.git -b stable
