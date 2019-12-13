@@ -12,7 +12,7 @@ addons:
         - libstdc++6
         - fonts-droid
 install:
-    - echo "Testing $TRAVIS_BUILD_DIR"
+    - echo "Testing $($TRAVIS_BUILD_DIR)"
 before_script:
     - cd ..
     - git clone https://github.com/flutter/flutter.git -b stable
@@ -21,7 +21,7 @@ before_script:
 script:
     - cd $TRAVIS_BUILD_DIR
     - echo 'Running linter analasis...'
-    - flutter analyze --no-pub
+    - flutter analyze
     - echo 'Running tests...'
     - flutter test
 cache:
