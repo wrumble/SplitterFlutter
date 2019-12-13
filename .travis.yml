@@ -12,7 +12,7 @@ addons:
         - libstdc++6
         - fonts-droid
 install:
-    - echo "Testing " + $TRAVIS_BUILD_DIR"
+    - echo 'Testing $TRAVIS_BUILD_DIR'
 before_script:
     - cd ..
     - git clone https://github.com/flutter/flutter.git -b stable
