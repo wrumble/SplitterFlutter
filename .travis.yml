@@ -1,23 +1,29 @@
-os: linux
+language: dart
+dart:
+    - stable
+os:
+    - linux
 sudo: false
 addons:
-apt:
+    apt:
     sources:
-    - ubuntu-toolchain-r-test
+        - ubuntu-toolchain-r-test
     packages:
-    - libstdc++6
-    - fonts-noto
-git:
-depth: 3
+        - libstdc++6
+        - fonts-droid
+install:
+    - echo 'Testing SplitterFlutter'
 before_script:
-- git clone https://github.com/flutter/flutter.git
-- ./flutter/bin/flutter doctor
+    - cd ..
+    - git clone https://github.com/flutter/flutter.git -b stable
+    - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
+    - flutter doctor
 script:
-- ../flutter/bin/flutter analyze
-- ../flutter/bin/flutter format -n --set-exit-if-changed .
-- ../flutter/bin/flutter test
+    - cd $TRAVIS_BUILD_DIR
+    - echo 'Running linter analysis...'
+    - flutter analyze
+    - echo 'Running tests...'
+    - flutter test
 cache:
-directories:
-    - $HOME/shared/.pub-cache
-branches:
-    only: [master, develop]
+    directories:
+    - $HOME/.pub-cache
