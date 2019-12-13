@@ -13,8 +13,6 @@ before_script:
 - git clone https://github.com/flutter/flutter.git
 - ./flutter/bin/flutter doctor
 script:
-- ls
-- cd SplitterFlutter
 - ../flutter/bin/flutter analyze
 - ../flutter/bin/flutter format -n --set-exit-if-changed .
 - ../flutter/bin/flutter test
