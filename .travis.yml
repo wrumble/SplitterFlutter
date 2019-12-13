@@ -19,9 +19,7 @@ before_script:
     - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
     - flutter doctor
 script:
-    - ls
-    - cd $TRAVIS_BUILD_DIR
-    - ls
+    - cd SplitterFlutter
     - flutter analyze --no-pub --no-current-package lib
     - flutter test
 cache:
