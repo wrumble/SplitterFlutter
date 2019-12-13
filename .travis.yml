@@ -25,7 +25,7 @@ script:
     - ls
     - cd SplitterFlutter
     - ls
-    - flutter analyze --no-pub --no-current-package lib
+    - flutter analyze --no-pub --no-current-package
     - flutter test
 cache:
     directories:
