@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:splitter/Models/User.dart';
-import '../Services/FirebaseAuthentication.dart';
+import 'package:splitter/Services/AuthenticationService.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({Key key, this.auth, this.user, this.logoutCallback})
+  HomeScreen({Key key, this.authenticationService, this.user, this.logoutCallback})
       : super(key: key);
 
-  final BaseAuth auth;
+  final AuthenticationServiceType authenticationService;
   final VoidCallback logoutCallback;
   final User user;
 
@@ -37,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _signOut() async {
     try {
-      await widget.auth.signOut();
+      await widget.authenticationService.signOut();
       widget.logoutCallback();
     } catch (e) {
       print(e);

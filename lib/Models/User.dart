@@ -19,5 +19,4 @@ class User {
     this(snapshot.data["id"],
          snapshot.data["firstName"],
          snapshot.data["lastName"]);
-  
 }

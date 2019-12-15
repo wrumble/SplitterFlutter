@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:splitter/Models/User.dart';
-import '../Services/FirebaseAuthentication.dart';
+import 'package:splitter/Services/AuthenticationService.dart';
+import 'package:splitter/Services/CloudStoreService.dart';
 
 class LoginSignupPage extends StatefulWidget {
-  LoginSignupPage({this.auth, this.loginCallback});
+  LoginSignupPage({@required this.authenticationService, 
+                   @required this.cloudStoreService, 
+                   @required this.loginCallback});
 
-  final BaseAuth auth;
+  final AuthenticationServiceType authenticationService;
+  final CloudStoreServiceType cloudStoreService;
   final VoidCallback loginCallback;
 
   @override
@@ -21,7 +25,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   String _password;
   String _errorMessage;
 
-    bool _isLoginForm;
+  bool _isLoginForm;
   bool _isLoading;
 
   // Check if form is valid before perform login or signup
@@ -43,12 +47,16 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     if (validateAndSave()) {
       try {
         User user;
+        String userId;
         if (_isLoginForm) {
-           user = await widget.auth.signIn(_email, _password);
+           userId = await widget.authenticationService.signIn(_email, _password);
+           user = await widget.cloudStoreService.fetchUserWithId(userId);
            print('Signed in: ${user.firstName} ${user.lastName}');
            showHomeScreenIfUserIdValid(user);
         } else {
-          user = await widget.auth.signUp(_email, _password, _firstName, _lastName);
+          userId = await widget.authenticationService.signUp(_email, _password, _firstName, _lastName);
+          User newUser = new User(userId, _firstName, _lastName);
+          user = await widget.cloudStoreService.createUser(newUser);
           //widget.auth.sendEmailVerification();
           //_showVerifyEmailSentDialog();
           print('Signed up user: ${user.id}');
@@ -62,7 +70,6 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         setState(() {
           _isLoading = false;
           _errorMessage = e.message;
-          _formKey.currentState.reset();
         });
       }
     }
@@ -186,6 +193,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         maxLines: 1,
         keyboardType: TextInputType.text,
         autofocus: false,
+        textCapitalization: TextCapitalization.words,
         decoration: new InputDecoration(
             hintText: 'First Name',
             icon: new Icon(
@@ -205,6 +213,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         maxLines: 1,
         keyboardType: TextInputType.text,
         autofocus: false,
+        textCapitalization: TextCapitalization.words,
         decoration: new InputDecoration(
             hintText: 'Last Name',
             icon: new Icon(

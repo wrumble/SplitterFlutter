@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:splitter/Models/User.dart';
-import './LoginSignupScreen.dart';
-import '../Services/FirebaseAuthentication.dart';
-import './HomeScreen.dart';
+import 'package:splitter/Services/AuthenticationService.dart';
+import 'package:splitter/Screens/LoginSignupScreen.dart';
+import 'package:splitter/Screens/HomeScreen.dart';
+import 'package:splitter/Services/CloudStoreService.dart';
 
 enum AuthStatus {
   NOT_DETERMINED,
@@ -11,9 +12,10 @@ enum AuthStatus {
 }
 
 class RootPage extends StatefulWidget {
-  RootPage({this.auth});
+  RootPage({@required this.authenticationService, @required this.cloudStoreService});
 
-  final BaseAuth auth;
+  final AuthenticationServiceType authenticationService;
+  final CloudStoreServiceType cloudStoreService;
 
   @override
   State<StatefulWidget> createState() => new _RootPageState();
@@ -30,24 +32,21 @@ class _RootPageState extends State<RootPage> {
   }
 
   void setInitialState() async {
-    User user = await widget.auth.getCurrentUser();
+    String userId = await widget.authenticationService.currentUserId();
       setState(() {
-        if (user != null) {
-          _user = user;
-          authStatus = AuthStatus.LOGGED_IN;
+        if (userId != null) {
+          login();
         } else {
           authStatus = AuthStatus.NOT_LOGGED_IN;
         }
       });
   }
 
-  void loginCallback() {
-    widget.auth.getCurrentUser().then((user) {
-      setState(() {
-        _user = user;
-      });
-    });
+  void login() async {
+    String userId = await widget.authenticationService.currentUserId();
+    User user = await widget.cloudStoreService.fetchUserWithId(userId);
     setState(() {
+      _user = user;
       authStatus = AuthStatus.LOGGED_IN;
     });
   }
@@ -76,15 +75,16 @@ class _RootPageState extends State<RootPage> {
         break;
       case AuthStatus.NOT_LOGGED_IN:
         return new LoginSignupPage(
-          auth: widget.auth,
-          loginCallback: loginCallback,
+          authenticationService: widget.authenticationService,
+          cloudStoreService: widget.cloudStoreService,
+          loginCallback: login,
         );
         break;
       case AuthStatus.LOGGED_IN:
         if (_user != null) {
           return new HomeScreen(
             user: _user,
-            auth: widget.auth,
+            authenticationService: widget.authenticationService,
             logoutCallback: logoutCallback,
           );
         } else
