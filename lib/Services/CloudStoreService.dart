@@ -15,7 +15,7 @@ class CloudStoreService implements CloudStoreServiceType
   Future<User> fetchUserWithId(String userId) async {
     try {
       DocumentSnapshot userDocument = await _cloudStore.document("Users/$userId").get();
-      return User.fromSnapshot(userDocument);
+      return User.fromJson(userDocument.data);
     } catch (error) {
       print("Error fetching user: $error");
       return null;

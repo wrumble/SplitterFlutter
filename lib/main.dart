@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:splitter/Services/AuthenticationService.dart';
-import 'package:splitter/Screens/RootScreen.dart';
 import 'package:splitter/Services/CloudStoreService.dart';
+import 'package:splitter/Screens/RootScreen/RootScreen.dart';
 
 void main() {
   runApp(new Spltter());

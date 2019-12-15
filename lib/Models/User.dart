@@ -7,7 +7,7 @@ class User {
 
   User(this.id, this.firstName, this.lastName);
 
-  toJson() {
+  Map<String, dynamic> toJson() {
     return {
       "id": id,
       "firstName": firstName,
@@ -15,8 +15,8 @@ class User {
     };
   }
 
-  User.fromSnapshot(DocumentSnapshot snapshot) :
-    this(snapshot.data["id"],
-         snapshot.data["firstName"],
-         snapshot.data["lastName"]);
+  User.fromJson(Map<String, dynamic> json) :
+    this(json["id"],
+         json["firstName"],
+         json["lastName"]);
 }

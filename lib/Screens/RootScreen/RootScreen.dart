@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:splitter/Models/User.dart';
 import 'package:splitter/Services/AuthenticationService.dart';
-import 'package:splitter/Screens/LoginSignupScreen.dart';
-import 'package:splitter/Screens/HomeScreen.dart';
 import 'package:splitter/Services/CloudStoreService.dart';
+import 'package:splitter/Screens/LoginAndSignupScreen/LoginSignupScreen.dart';
+import 'package:splitter/Screens/HomeScreen/HomeScreen.dart';
 
 enum AuthStatus {
   NOT_DETERMINED,
