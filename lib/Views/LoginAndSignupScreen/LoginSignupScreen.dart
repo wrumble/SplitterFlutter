@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
-import 'LoginAndSignupScreenViewModel.dart';
+import 'package:splitter/Models/User.dart';
+import 'package:splitter/Services/AuthenticationService.dart';
+import 'package:splitter/Services/CloudStoreService.dart';
 
-class LoginAndSignupScreen extends StatefulWidget {
-  LoginAndSignupScreen({@required this.viewModel});
+class LoginSignupPage extends StatefulWidget {
+  LoginSignupPage({@required this.authenticationService, 
+                   @required this.cloudStoreService, 
+                   @required this.loginCallback});
 
-  final LoginAndSignupScreenViewModelType viewModel;
+  final AuthenticationServiceType authenticationService;
+  final CloudStoreServiceType cloudStoreService;
+  final VoidCallback loginCallback;
 
   @override
-  State<StatefulWidget> createState() => new _LoginAndSignupScreenState();
+  State<StatefulWidget> createState() => new _LoginSignupPageState();
 }
 
-class _LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
+class _LoginSignupPageState extends State<LoginSignupPage> {
   final _formKey = new GlobalKey<FormState>();
 
   String _firstName;
@@ -22,6 +28,7 @@ class _LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
   bool _isLoginForm;
   bool _isLoading;
 
+  // Check if form is valid before perform login or signup
   bool validateAndSave() {
     final form = _formKey.currentState;
     if (form.validate()) {
@@ -39,19 +46,30 @@ class _LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
     });
     if (validateAndSave()) {
       try {
+        User user;
+        String userId;
         if (_isLoginForm) {
-           await widget.viewModel.signIn(_email, _password);
+           userId = await widget.authenticationService.signIn(_email, _password);
+           user = await widget.cloudStoreService.fetchUserWithId(userId);
+           print('Signed in: ${user.firstName} ${user.lastName}');
+           showHomeScreenIfUserIdValid(user);
         } else {
-          await widget.viewModel.signUp(_email, _password, _firstName, _lastName);
+          userId = await widget.authenticationService.signUp(_email, _password);
+          User newUser = new User(userId, _firstName, _lastName);
+          user = await widget.cloudStoreService.createUser(newUser);
+          //widget.auth.sendEmailVerification();
+          //_showVerifyEmailSentDialog();
+          print('Signed up user: ${user.id}');
+          showHomeScreenIfUserIdValid(user);
         }
         setState(() {
           _isLoading = false;
         });
-      } catch (error) {
-        print('Error: $error');
+      } catch (e) {
+        print('Error: $e');
         setState(() {
           _isLoading = false;
-          _errorMessage = error;
+          _errorMessage = e.message;
         });
       }
     }
@@ -63,6 +81,12 @@ class _LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
     _isLoading = false;
     _isLoginForm = true;
     super.initState();
+  }
+
+  void showHomeScreenIfUserIdValid(User user) {
+    if (user != null) {
+        widget.loginCallback();
+    }
   }
 
   void resetForm() {
@@ -156,7 +180,9 @@ class _LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
             fontWeight: FontWeight.w300),
       );
     } else {
-      return null;
+      return new Container(
+        height: 0.0,
+      );
     }
   }
 

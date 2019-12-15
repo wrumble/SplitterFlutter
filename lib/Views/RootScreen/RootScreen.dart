@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:splitter/Models/User.dart';
 import 'package:splitter/Screens/HomeScreen/HomeScreenViewModel.dart';
+import 'package:splitter/Screens/LoginAndSignupScreen/LoginAndSignupScreenViewModel.dart';
 import 'package:splitter/Services/AuthenticationService.dart';
 import 'package:splitter/Services/CloudStoreService.dart';
 import 'package:splitter/Screens/LoginAndSignupScreen/LoginAndSignupScreen.dart';
@@ -75,11 +76,10 @@ class _RootPageState extends State<RootPage> {
         return buildWaitingScreen();
         break;
       case AuthenticationState.notLoggedIn:
-        return new LoginAndSignupScreen(
-          authenticationService: widget.authenticationService,
-          cloudStoreService: widget.cloudStoreService,
-          loginCallback: login,
-        );
+        final viewModel = LoginAndSignupScreenViewModel(authenticationService: widget.authenticationService,
+                                                        cloudStoreService: widget.cloudStoreService,
+                                                        loginCallback: logoutCallback);
+        return new LoginAndSignupScreen(viewModel: viewModel);
         break;
       case AuthenticationState.loggedIn:
         if (_user != null) {

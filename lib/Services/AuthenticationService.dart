@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 abstract class AuthenticationServiceType
  {
   Future<String> signIn(String email, String password);
-  Future<String> signUp(String email, String password, String firstName, String lastName);
+  Future<String> signUp(String email, String password);
   Future<String> currentUserId();
   Future<bool> isEmailVerified();
   Future<void> sendEmailVerification();
@@ -20,7 +20,7 @@ class AuthenticationService implements AuthenticationServiceType
     return result.user.uid;
   }
 
-  Future<String> signUp(String email, String password, String firstName, String lastName) async {
+  Future<String> signUp(String email, String password) async {
     AuthResult result = await _authentication.createUserWithEmailAndPassword(email: email, password: password);
     return result.user.uid; 
   }

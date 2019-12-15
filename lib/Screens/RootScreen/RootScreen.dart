@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:splitter/Models/User.dart';
 import 'package:splitter/Screens/HomeScreen/HomeScreenViewModel.dart';
 import 'package:splitter/Screens/LoginAndSignupScreen/LoginAndSignupScreen.dart';
+import 'package:splitter/Screens/LoginAndSignupScreen/LoginAndSignupScreenViewModel.dart';
 import 'package:splitter/Services/AuthenticationService.dart';
 import 'package:splitter/Services/CloudStoreService.dart';
 import 'package:splitter/Screens/HomeScreen/HomeScreen.dart';
@@ -36,14 +37,14 @@ class _RootScreenState extends State<RootScreen> {
     String userId = await widget.authenticationService.currentUserId();
       setState(() {
         if (userId != null) {
-          login();
+          loginCallBack();
         } else {
           authStatus = AuthStatus.NOT_LOGGED_IN;
         }
       });
   }
 
-  void login() async {
+  void loginCallBack() async {
     String userId = await widget.authenticationService.currentUserId();
     User user = await widget.cloudStoreService.fetchUserWithId(userId);
     setState(() {
@@ -75,11 +76,10 @@ class _RootScreenState extends State<RootScreen> {
         return buildWaitingScreen();
         break;
       case AuthStatus.NOT_LOGGED_IN:
-        return new LoginAndSignupScreen(
-          authenticationService: widget.authenticationService,
-          cloudStoreService: widget.cloudStoreService,
-          loginCallback: login,
-        );
+        final viewModel = LoginAndSignupScreenViewModel(authenticationService: widget.authenticationService,
+                          cloudStoreService: widget.cloudStoreService,
+                          loginCallback: loginCallBack);
+        return new LoginAndSignupScreen(viewModel: viewModel);
         break;
       case AuthStatus.LOGGED_IN:
         if (_user != null) {
