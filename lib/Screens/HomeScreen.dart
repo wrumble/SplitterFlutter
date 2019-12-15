@@ -3,7 +3,10 @@ import 'package:splitter/Models/User.dart';
 import 'package:splitter/Services/AuthenticationService.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({Key key, this.authenticationService, this.user, this.logoutCallback})
+  HomeScreen({Key key, 
+              @required  this.authenticationService,
+              @required this.user,
+              @required this.logoutCallback})
       : super(key: key);
 
   final AuthenticationServiceType authenticationService;

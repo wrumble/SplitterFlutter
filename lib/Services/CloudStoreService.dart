@@ -10,7 +10,7 @@ abstract class CloudStoreServiceType
 
 class CloudStoreService implements CloudStoreServiceType
 {
-    final Firestore _cloudStore = Firestore.instance;
+  final Firestore _cloudStore = Firestore.instance;
 
   Future<User> fetchUserWithId(String userId) async {
     try {
