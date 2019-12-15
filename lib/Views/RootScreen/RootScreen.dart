@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:splitter/Models/User.dart';
+import 'package:splitter/Screens/HomeScreen/HomeScreenViewModel.dart';
 import 'package:splitter/Services/AuthenticationService.dart';
 import 'package:splitter/Services/CloudStoreService.dart';
 import 'package:splitter/Screens/LoginAndSignupScreen/LoginAndSignupScreen.dart';
 import 'package:splitter/Screens/HomeScreen/HomeScreen.dart';
 
-enum AuthStatus {
-  NOT_DETERMINED,
-  NOT_LOGGED_IN,
-  LOGGED_IN,
+enum AuthenticationState {
+  undetermined,
+  notLoggedIn,
+  loggedIn,
 }
 
 class RootPage extends StatefulWidget {
@@ -22,7 +23,7 @@ class RootPage extends StatefulWidget {
 }
 
 class _RootPageState extends State<RootPage> {
-  AuthStatus authStatus = AuthStatus.NOT_DETERMINED;
+  AuthenticationState authStatus = AuthenticationState.undetermined;
   User _user;
 
   @override
@@ -37,7 +38,7 @@ class _RootPageState extends State<RootPage> {
         if (userId != null) {
           login();
         } else {
-          authStatus = AuthStatus.NOT_LOGGED_IN;
+          authStatus = AuthenticationState.notLoggedIn;
         }
       });
   }
@@ -47,13 +48,13 @@ class _RootPageState extends State<RootPage> {
     User user = await widget.cloudStoreService.fetchUserWithId(userId);
     setState(() {
       _user = user;
-      authStatus = AuthStatus.LOGGED_IN;
+      authStatus = AuthenticationState.loggedIn;
     });
   }
 
   void logoutCallback() {
     setState(() {
-      authStatus = AuthStatus.NOT_LOGGED_IN;
+      authStatus = AuthenticationState.notLoggedIn;
       _user = null;
     });
   }
@@ -70,21 +71,22 @@ class _RootPageState extends State<RootPage> {
   @override
   Widget build(BuildContext context) {
     switch (authStatus) {
-      case AuthStatus.NOT_DETERMINED:
+      case AuthenticationState.undetermined:
         return buildWaitingScreen();
         break;
-      case AuthStatus.NOT_LOGGED_IN:
+      case AuthenticationState.notLoggedIn:
         return new LoginAndSignupScreen(
           authenticationService: widget.authenticationService,
           cloudStoreService: widget.cloudStoreService,
           loginCallback: login,
         );
         break;
-      case AuthStatus.LOGGED_IN:
+      case AuthenticationState.loggedIn:
         if (_user != null) {
+          final viewModel = HomeScreenViewModel(authenticationService: widget.authenticationService);
           return new HomeScreen(
             user: _user,
-            authenticationService: widget.authenticationService,
+            viewModel: viewModel,
             logoutCallback: logoutCallback,
           );
         } else

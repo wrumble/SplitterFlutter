@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:splitter/Models/User.dart';
+import 'package:splitter/Screens/HomeScreen/HomeScreenViewModel.dart';
 import 'package:splitter/Screens/LoginAndSignupScreen/LoginAndSignupScreen.dart';
 import 'package:splitter/Services/AuthenticationService.dart';
 import 'package:splitter/Services/CloudStoreService.dart';
@@ -82,10 +83,11 @@ class _RootScreenState extends State<RootScreen> {
         break;
       case AuthStatus.LOGGED_IN:
         if (_user != null) {
+          final viewModel = HomeScreenViewModel(authenticationService: widget.authenticationService,
+                                                logoutCallback: logoutCallback);
           return new HomeScreen(
             user: _user,
-            authenticationService: widget.authenticationService,
-            logoutCallback: logoutCallback,
+            viewModel: viewModel,
           );
         } else
           return buildWaitingScreen();

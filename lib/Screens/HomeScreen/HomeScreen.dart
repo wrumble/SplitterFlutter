@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:splitter/Models/User.dart';
-import 'package:splitter/Services/AuthenticationService.dart';
+import 'HomeScreenViewModel.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key key, 
-              @required  this.authenticationService,
+              @required this.viewModel,
               @required this.user,
               @required this.logoutCallback})
       : super(key: key);
 
-  final AuthenticationServiceType authenticationService;
-  final VoidCallback logoutCallback;
+  final HomeScreenViewModelType viewModel;
   final User user;
+  final VoidCallback logoutCallback;
 
   @override
   State<StatefulWidget> createState() => new _HomeScreenState();
@@ -32,18 +32,9 @@ class _HomeScreenState extends State<HomeScreen> {
           new FlatButton(
               child: new Text('Logout',
                   style: new TextStyle(fontSize: 17.0, color: Colors.white)),
-              onPressed: _signOut)
+              onPressed: widget.viewModel.signOut)
           ],
         )
     );
-  }
-
-  _signOut() async {
-    try {
-      await widget.authenticationService.signOut();
-      widget.logoutCallback();
-    } catch (e) {
-      print(e);
-    }
   }
 }
