@@ -83,11 +83,11 @@ class _RootPageState extends State<RootPage> {
         break;
       case AuthenticationState.loggedIn:
         if (_user != null) {
-          final viewModel = HomeScreenViewModel(authenticationService: widget.authenticationService);
+          final viewModel = HomeScreenViewModel(authenticationService: widget.authenticationService,
+                                                logoutCallback: logoutCallback);
           return new HomeScreen(
             user: _user,
             viewModel: viewModel,
-            logoutCallback: logoutCallback,
           );
         } else
           return buildWaitingScreen();

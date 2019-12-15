@@ -5,13 +5,11 @@ import 'HomeScreenViewModel.dart';
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key key, 
               @required this.viewModel,
-              @required this.user,
-              @required this.logoutCallback})
+              @required this.user})
       : super(key: key);
 
   final HomeScreenViewModelType viewModel;
   final User user;
-  final VoidCallback logoutCallback;
 
   @override
   State<StatefulWidget> createState() => new _HomeScreenState();
