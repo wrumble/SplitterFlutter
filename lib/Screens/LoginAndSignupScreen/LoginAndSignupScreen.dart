@@ -3,8 +3,8 @@ import 'package:splitter/Models/User.dart';
 import 'package:splitter/Services/AuthenticationService.dart';
 import 'package:splitter/Services/CloudStoreService.dart';
 
-class LoginSignupPage extends StatefulWidget {
-  LoginSignupPage({@required this.authenticationService, 
+class LoginAndSignupScreen extends StatefulWidget {
+  LoginAndSignupScreen({@required this.authenticationService, 
                    @required this.cloudStoreService, 
                    @required this.loginCallback});
 
@@ -13,10 +13,10 @@ class LoginSignupPage extends StatefulWidget {
   final VoidCallback loginCallback;
 
   @override
-  State<StatefulWidget> createState() => new _LoginSignupPageState();
+  State<StatefulWidget> createState() => new _LoginAndSignupScreenState();
 }
 
-class _LoginSignupPageState extends State<LoginSignupPage> {
+class _LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
   final _formKey = new GlobalKey<FormState>();
 
   String _firstName;

@@ -16,7 +16,7 @@ class Spltter extends StatelessWidget {
         theme: new ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: new RootPage(authenticationService: new AuthenticationService(),
+        home: new RootScreen(authenticationService: new AuthenticationService(),
                            cloudStoreService: new CloudStoreService()),
     );
   }

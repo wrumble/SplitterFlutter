@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:splitter/Models/User.dart';
-import 'package:splitter/Screens/LoginAndSignupScreen/LoginAndSignupScreen.dart';
 import 'package:splitter/Services/AuthenticationService.dart';
 import 'package:splitter/Services/CloudStoreService.dart';
+import 'package:splitter/Screens/LoginAndSignupScreen/LoginAndSignupScreen.dart';
 import 'package:splitter/Screens/HomeScreen/HomeScreen.dart';
 
 enum AuthStatus {
@@ -11,17 +11,17 @@ enum AuthStatus {
   LOGGED_IN,
 }
 
-class RootScreen extends StatefulWidget {
-  RootScreen({@required this.authenticationService, @required this.cloudStoreService});
+class RootPage extends StatefulWidget {
+  RootPage({@required this.authenticationService, @required this.cloudStoreService});
 
   final AuthenticationServiceType authenticationService;
   final CloudStoreServiceType cloudStoreService;
 
   @override
-  State<StatefulWidget> createState() => new _RootScreenState();
+  State<StatefulWidget> createState() => new _RootPageState();
 }
 
-class _RootScreenState extends State<RootScreen> {
+class _RootPageState extends State<RootPage> {
   AuthStatus authStatus = AuthStatus.NOT_DETERMINED;
   User _user;
 
