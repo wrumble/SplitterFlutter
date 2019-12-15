@@ -1,11 +1,17 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:splitter/Models/User.dart';
 import 'package:splitter/Services/AuthenticationService.dart';
 import 'package:splitter/Services/CloudStoreService.dart';
 
-abstract class LoginAndSignupScreenViewModelType {  
-  signIn(String email, String password);
-  signUp(String email, String password, String firstName, String lastName);
+abstract class LoginAndSignupScreenViewModelType {
+  Stream<String> get errorText;
+  Stream<bool> get isLoading;
+  Stream<bool> get isLoginForm;
+
+  void signIn(String email, String password);
+  void signUp(String email, String password, String firstName, String lastName);
+  void dispose();
 }
 
 class LoginAndSignupScreenViewModel implements LoginAndSignupScreenViewModelType {
@@ -17,20 +23,44 @@ class LoginAndSignupScreenViewModel implements LoginAndSignupScreenViewModelType
   final CloudStoreServiceType cloudStoreService;
   final VoidCallback loginCallback;
 
+  final errorController = StreamController<String>.broadcast();
+  final isLoadingController = StreamController<bool>.broadcast();
+  final isLoginController = StreamController<bool>.broadcast();
+
   @override
-  signIn(String email, String password) async {
+  Stream<String> get errorText => errorController.stream;
+  @override
+  Stream<bool> get isLoading => isLoadingController.stream;
+  @override
+  Stream<bool> get isLoginForm => isLoginController.stream;
+
+  @override
+  void signIn(String email, String password) async {
+    _setStateBeforeCall(true);
     try {
+      // authenticationService.signIn(email, password)
+      // .asStream()
+      // .asyncMap(cloudStoreService.fetchUserWithId)
+      // .map((user){
+      //   print('Signed in: ${user.id}');
+      //   isLoadingController.add(false);
+      // }).handleError((error) {
+      //   _updateError(error.message);
+      //   isLoadingController.add(false);
+      // });
       String userId = await authenticationService.signIn(email, password);
       User user = await cloudStoreService.fetchUserWithId(userId)
         .whenComplete(loginCallback);
-      print('Signed in: ${user.firstName} ${user.lastName}');
+      print('Signed in: ${user.id}');
     } catch (error) {
-      print(error);
+      _updateError(error.message);
     }
+    isLoadingController.add(false);
   }
 
   @override 
-  signUp(String email, String password, String firstName, String lastName) async {
+  void signUp(String email, String password, String firstName, String lastName) async {
+    _setStateBeforeCall(false);
     try {
       String userId = await authenticationService.signUp(email, password);
       User user = new User(userId, firstName, lastName);
@@ -38,13 +68,31 @@ class LoginAndSignupScreenViewModel implements LoginAndSignupScreenViewModelType
         .then(showHomeScreenIfValidUser);
       print('Signed up user: ${user.id}');
     } catch (error) {
-        print(error);
+        _updateError(error.message);
     }
+    isLoadingController.add(false);
   }
 
-  showHomeScreenIfValidUser(User user) {
+  @override 
+  void dispose() {
+    isLoginController.close();
+    isLoadingController.close();
+    errorController.close();
+  }
+
+  void showHomeScreenIfValidUser(User user) {
     if (user != null) {
       loginCallback();
     }
+  }
+
+  void _updateError(String text) {
+    errorController.add(text);
+  }
+
+  void _setStateBeforeCall(bool isLoginForm) {
+    isLoginController.add(isLoginForm);
+    isLoadingController.add(true);
+    errorController.add("");
   }
 }

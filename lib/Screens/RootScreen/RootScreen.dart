@@ -77,18 +77,16 @@ class _RootScreenState extends State<RootScreen> {
         break;
       case AuthStatus.NOT_LOGGED_IN:
         final viewModel = LoginAndSignupScreenViewModel(authenticationService: widget.authenticationService,
-                          cloudStoreService: widget.cloudStoreService,
-                          loginCallback: loginCallBack);
+                                                        cloudStoreService: widget.cloudStoreService,
+                                                        loginCallback: loginCallBack);
         return new LoginAndSignupScreen(viewModel: viewModel);
         break;
       case AuthStatus.LOGGED_IN:
         if (_user != null) {
           final viewModel = HomeScreenViewModel(authenticationService: widget.authenticationService,
                                                 logoutCallback: logoutCallback);
-          return new HomeScreen(
-            user: _user,
-            viewModel: viewModel,
-          );
+          return new HomeScreen(user: _user,
+                                viewModel: viewModel);
         } else
           return buildWaitingScreen();
         break;

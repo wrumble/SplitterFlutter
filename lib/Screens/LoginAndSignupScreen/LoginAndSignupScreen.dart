@@ -17,10 +17,8 @@ class _LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
   String _lastName;
   String _email;
   String _password;
-  String _errorMessage;
 
   bool _isLoginForm;
-  bool _isLoading;
 
   bool validateAndSave() {
     final form = _formKey.currentState;
@@ -32,42 +30,24 @@ class _LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
   }
 
   // Perform login or signup
-  void validateAndSubmit() async {
-    setState(() {
-      _errorMessage = "";
-      _isLoading = true;
-    });
+  void validateAndSubmit() {
     if (validateAndSave()) {
-      try {
-        if (_isLoginForm) {
-           await widget.viewModel.signIn(_email, _password);
-        } else {
-          await widget.viewModel.signUp(_email, _password, _firstName, _lastName);
-        }
-        setState(() {
-          _isLoading = false;
-        });
-      } catch (error) {
-        print('Error: $error');
-        setState(() {
-          _isLoading = false;
-          _errorMessage = error;
-        });
+      if (_isLoginForm) {
+        widget.viewModel.signIn(_email, _password);
+      } else {
+        widget.viewModel.signUp(_email, _password, _firstName, _lastName);
       }
     }
   }
 
   @override
   void initState() {
-    _errorMessage = "";
-    _isLoading = false;
     _isLoginForm = true;
     super.initState();
   }
 
   void resetForm() {
     _formKey.currentState.reset();
-    _errorMessage = "";
   }
 
   void toggleFormMode() {
@@ -92,37 +72,17 @@ class _LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
   }
 
   Widget _showCircularProgress() {
-    if (_isLoading) {
-      return Center(child: CircularProgressIndicator());
-    }
-    return Container(
-      height: 0.0,
-      width: 0.0,
+    return StreamBuilder<bool>(
+      initialData: false,
+      stream: widget.viewModel.isLoading,
+      builder: (context, snapshot) {
+        return Visibility(
+          child: new Center(child: CircularProgressIndicator()),
+          visible: snapshot.data
+        );
+      }
     );
   }
-
-//  void _showVerifyEmailSentDialog() {
-//    showDialog(
-//      context: context,
-//      builder: (BuildContext context) {
-//        // return object of type Dialog
-//        return AlertDialog(
-//          title: new Text("Verify your account"),
-//          content:
-//              new Text("Link to verify account has been sent to your email"),
-//          actions: <Widget>[
-//            new FlatButton(
-//              child: new Text("Dismiss"),
-//              onPressed: () {
-//                toggleFormMode();
-//                Navigator.of(context).pop();
-//              },
-//            ),
-//          ],
-//        );
-//      },
-//    );
-//  }
 
   Widget _showForm() {
     bool notNull(Object o) => o != null;
@@ -146,18 +106,24 @@ class _LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
   }
 
   Widget showErrorMessage() {
-    if (_errorMessage.length > 0 && _errorMessage != null) {
-      return new Text(
-        _errorMessage,
-        style: TextStyle(
-            fontSize: 13.0,
-            color: Colors.red,
-            height: 1.0,
-            fontWeight: FontWeight.w300),
-      );
-    } else {
-      return null;
-    }
+    return StreamBuilder<String>(
+      stream: widget.viewModel.errorText,
+      builder: (context, snapshot) {
+        if (snapshot.data != null) {
+          return  new Text(
+              snapshot.data,
+              style: TextStyle(
+                  fontSize: 13.0,
+                  color: Colors.red,
+                  height: 1.0,
+                  fontWeight: FontWeight.w300
+              ),
+          );
+        } else {
+          return SizedBox.shrink();
+        }
+      }
+    );
   }
 
     Widget showFirstNameInput() {
@@ -262,5 +228,11 @@ class _LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
           ),
         )
       );
+  }
+
+   @override
+  void dispose() {
+    widget.viewModel.dispose();
+    super.dispose();
   }
 }
