@@ -4,20 +4,20 @@ import 'package:splitter/Services/CloudStoreService.dart';
 import 'package:splitter/Screens/RootScreen/RootScreen.dart';
 
 void main() {
-  runApp(new Spltter());
+  runApp(Spltter());
 }
 
 class Spltter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-        title: 'Flutter login demo',
+    return MaterialApp(
+        title: 'Splitter',
         debugShowCheckedModeBanner: false,
-        theme: new ThemeData(
+        theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: new RootScreen(authenticationService: new AuthenticationService(),
-                             cloudStoreService: new CloudStoreService()),
+        home: RootScreen(authenticationService: AuthenticationService(),
+                             cloudStoreService: CloudStoreService()),
     );
   }
 }

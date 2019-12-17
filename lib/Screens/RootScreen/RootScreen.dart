@@ -20,10 +20,10 @@ class RootScreen extends StatefulWidget {
   final CloudStoreServiceType cloudStoreService;
 
   @override
-  State<StatefulWidget> createState() => new _RootScreenState();
+  State<StatefulWidget> createState() => RootScreenState();
 }
 
-class _RootScreenState extends State<RootScreen> {
+class RootScreenState extends State<RootScreen> {
   AuthStatus authStatus = AuthStatus.NOT_DETERMINED;
   User _user;
 
@@ -79,16 +79,17 @@ class _RootScreenState extends State<RootScreen> {
         final viewModel = LoginAndSignupScreenViewModel(authenticationService: widget.authenticationService,
                                                         cloudStoreService: widget.cloudStoreService,
                                                         loginCallback: loginCallBack);
-        return new LoginAndSignupScreen(viewModel: viewModel);
+        return LoginAndSignupScreen(viewModel: viewModel);
         break;
       case AuthStatus.LOGGED_IN:
         if (_user != null) {
           final viewModel = HomeScreenViewModel(authenticationService: widget.authenticationService,
                                                 logoutCallback: logoutCallback);
-          return new HomeScreen(user: _user,
+          return HomeScreen(user: _user,
                                 viewModel: viewModel);
-        } else
+        } else {
           return buildWaitingScreen();
+        }
         break;
       default:
         return buildWaitingScreen();

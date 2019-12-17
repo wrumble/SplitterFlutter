@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:splitter/Models/User.dart';
 import 'package:splitter/Services/AuthenticationService.dart';
@@ -10,7 +11,7 @@ abstract class LoginAndSignupScreenViewModelType {
   Stream<bool> get isLoginForm;
 
   void signIn(String email, String password);
-  void signUp(String email, String password, String firstName, String lastName);
+  void signUp(User user, String password);
   void dispose();
 }
 
@@ -59,11 +60,10 @@ class LoginAndSignupScreenViewModel implements LoginAndSignupScreenViewModelType
   }
 
   @override 
-  void signUp(String email, String password, String firstName, String lastName) async {
+  void signUp(User user, String password) async {
     _setStateBeforeCall(false);
     try {
-      String userId = await authenticationService.signUp(email, password);
-      User user = new User(userId, firstName, lastName);
+      String userId = await authenticationService.signUp(user.email, password);
       await cloudStoreService.createUser(user)
         .then(showHomeScreenIfValidUser);
       print('Signed up user: ${user.id}');
@@ -94,5 +94,17 @@ class LoginAndSignupScreenViewModel implements LoginAndSignupScreenViewModelType
     isLoginController.add(isLoginForm);
     isLoadingController.add(true);
     errorController.add("");
+  }
+
+  void validateAndSubmit(GlobalKey<FormState> formKey, String password, User user) {
+    final form = formKey.currentState;
+    if (form.validate()) {
+          form.save();
+      if (isLoginForm) {
+        signIn(user.email, password);
+      } else {
+        signUp(user, password);
+      }
+    }
   }
 }

@@ -12,10 +12,10 @@ class HomeScreen extends StatefulWidget {
   final User user;
 
   @override
-  State<StatefulWidget> createState() => new _HomeScreenState();
+  State<StatefulWidget> createState() => HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
@@ -23,13 +23,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-        appBar: new AppBar(
-          title: new Text('Logged In as ${widget.user.firstName} ${widget.user.lastName}'),
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('Logged In as ${widget.user.firstName} ${widget.user.lastName}'),
           actions: <Widget>[
-          new FlatButton(
-              child: new Text('Logout',
-                  style: new TextStyle(fontSize: 17.0, color: Colors.white)),
+          FlatButton(
+              child: Text('Logout',
+                  style: TextStyle(fontSize: 17.0, color: Colors.white)),
               onPressed: widget.viewModel.signOut)
           ],
         )
