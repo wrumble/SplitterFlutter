@@ -5,16 +5,26 @@ import 'package:splitter/Services/CloudStoreService.dart';
 import 'package:splitter/Screens/RootScreen/RootScreen.dart';
 
 void main() {
-  runApp(Spltter());
+  runApp(Splitter());
 }
 
-class Spltter extends StatelessWidget {
+class Splitter extends StatefulWidget {
+
+  @override
+  SplitterState createState() => SplitterState();
+}
+
+class SplitterState extends State<Splitter> {
+  RootScreenViewModelType rootViewModel;
+  @override
+  void initState() {
+        rootViewModel = RootScreenViewModel(authenticationService: AuthenticationService(),
+                                              cloudStoreService: CloudStoreService());
+    super.initState();
+  }
+  
   @override
   Widget build(BuildContext context) {
-    final authenticationService = AuthenticationService();
-    final cloudStoreService = CloudStoreService();
-    final rootViewModel = RootScreenViewModel(authenticationService: authenticationService,
-                                              cloudStoreService: cloudStoreService);
     return MaterialApp(
               title: 'Splitter',
               debugShowCheckedModeBanner: false,

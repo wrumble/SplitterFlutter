@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
-import 'LoginAndSignupScreenViewModel.dart';
+import 'package:splitter/Models/User.dart';
+import 'package:splitter/Services/AuthenticationService.dart';
+import 'package:splitter/Services/CloudStoreService.dart';
 
-class LoginAndSignupScreen extends StatefulWidget {
-  LoginAndSignupScreen({@required this.viewModel});
+class LoginSignupPage extends StatefulWidget {
+  LoginSignupPage({@required this.authenticationService, 
+                   @required this.cloudStoreService, 
+                   @required this.loginCallback});
 
-  final LoginAndSignupScreenViewModelType viewModel;
+  final AuthenticationServiceType authenticationService;
+  final CloudStoreServiceType cloudStoreService;
+  final VoidCallback loginCallback;
 
   @override
-  State<StatefulWidget> createState() => LoginAndSignupScreenState();
+  State<StatefulWidget> createState() => new _LoginSignupPageState();
 }
 
-class LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
-  final _formKey = GlobalKey<FormState>();
+class _LoginSignupPageState extends State<LoginSignupPage> {
+  final _formKey = new GlobalKey<FormState>();
 
   String _firstName;
   String _lastName;
@@ -22,6 +28,7 @@ class LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
   bool _isLoginForm;
   bool _isLoading;
 
+  // Check if form is valid before perform login or signup
   bool validateAndSave() {
     final form = _formKey.currentState;
     if (form.validate()) {
@@ -39,19 +46,30 @@ class LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
     });
     if (validateAndSave()) {
       try {
+        User user;
+        String userId;
         if (_isLoginForm) {
-           await widget.viewModel.signIn(_email, _password);
+           userId = await widget.authenticationService.signIn(_email, _password);
+           user = await widget.cloudStoreService.fetchUserWithId(userId);
+           print('Signed in: ${user.firstName} ${user.lastName}');
+           showHomeScreenIfUserIdValid(user);
         } else {
-          await widget.viewModel.signUp(_email, _password, _firstName, _lastName);
+          userId = await widget.authenticationService.signUp(_email, _password);
+          User newUser = new User(userId, _firstName, _lastName);
+          user = await widget.cloudStoreService.createUser(newUser);
+          //widget.auth.sendEmailVerification();
+          //_showVerifyEmailSentDialog();
+          print('Signed up user: ${user.id}');
+          showHomeScreenIfUserIdValid(user);
         }
         setState(() {
           _isLoading = false;
         });
-      } catch (error) {
-        print('Error: $error');
+      } catch (e) {
+        print('Error: $e');
         setState(() {
           _isLoading = false;
-          _errorMessage = error;
+          _errorMessage = e.message;
         });
       }
     }
@@ -63,6 +81,12 @@ class LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
     _isLoading = false;
     _isLoginForm = true;
     super.initState();
+  }
+
+  void showHomeScreenIfUserIdValid(User user) {
+    if (user != null) {
+        widget.loginCallback();
+    }
   }
 
   void resetForm() {
@@ -79,9 +103,9 @@ class LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('Flutter login demo'),
+    return new Scaffold(
+        appBar: new AppBar(
+          title: new Text('Flutter login demo'),
         ),
         body: Stack(
           children: <Widget>[
@@ -126,11 +150,11 @@ class LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
 
   Widget _showForm() {
     bool notNull(Object o) => o != null;
-    return Container(
+    return new Container(
         padding: EdgeInsets.all(16.0),
-        child: Form(
+        child: new Form(
           key: _formKey,
-          child: ListView(
+          child: new ListView(
             shrinkWrap: true,
             children: <Widget>[
               _isLoginForm ? null : showFirstNameInput(),
@@ -146,8 +170,8 @@ class LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
   }
 
   Widget showErrorMessage() {
-    if (_errorMessage.isNotEmpty && _errorMessage != null) {
-      return Text(
+    if (_errorMessage.length > 0 && _errorMessage != null) {
+      return new Text(
         _errorMessage,
         style: TextStyle(
             fontSize: 13.0,
@@ -156,21 +180,23 @@ class LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
             fontWeight: FontWeight.w300),
       );
     } else {
-      return null;
+      return new Container(
+        height: 0.0,
+      );
     }
   }
 
     Widget showFirstNameInput() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
-      child: TextFormField(
+      child: new TextFormField(
         maxLines: 1,
         keyboardType: TextInputType.text,
         autofocus: false,
         textCapitalization: TextCapitalization.words,
-        decoration: InputDecoration(
+        decoration: new InputDecoration(
             hintText: 'First Name',
-            icon: Icon(
+            icon: new Icon(
               Icons.person,
               color: Colors.grey,
             )),
@@ -183,14 +209,14 @@ class LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
   Widget showLastNameInput() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
-      child: TextFormField(
+      child: new TextFormField(
         maxLines: 1,
         keyboardType: TextInputType.text,
         autofocus: false,
         textCapitalization: TextCapitalization.words,
-        decoration: InputDecoration(
+        decoration: new InputDecoration(
             hintText: 'Last Name',
-            icon: Icon(
+            icon: new Icon(
               Icons.person,
               color: Colors.grey,
             )),
@@ -203,13 +229,13 @@ class LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
   Widget showEmailInput() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
-      child: TextFormField(
+      child: new TextFormField(
         maxLines: 1,
         keyboardType: TextInputType.emailAddress,
         autofocus: false,
-        decoration: InputDecoration(
+        decoration: new InputDecoration(
             hintText: 'Email',
-            icon: Icon(
+            icon: new Icon(
               Icons.mail,
               color: Colors.grey,
             )),
@@ -222,13 +248,13 @@ class LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
   Widget showPasswordInput() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
-      child: TextFormField(
+      child: new TextFormField(
         maxLines: 1,
         obscureText: true,
         autofocus: false,
-        decoration: InputDecoration(
+        decoration: new InputDecoration(
             hintText: 'Password',
-            icon: Icon(
+            icon: new Icon(
               Icons.lock,
               color: Colors.grey,
             )),
@@ -239,25 +265,25 @@ class LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
   }
 
   Widget showSecondaryButton() {
-    return FlatButton(
-        child: Text(
+    return new FlatButton(
+        child: new Text(
             _isLoginForm ? 'Create an account' : 'Have an account? Sign in',
-            style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300)),
+            style: new TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300)),
         onPressed: toggleFormMode);
   }
 
   Widget showPrimaryButton() {
-    return Padding(
+    return new Padding(
         padding: EdgeInsets.fromLTRB(0.0, 45.0, 0.0, 0.0),
         child: SizedBox(
           height: 40.0,
-          child: RaisedButton(
+          child: new RaisedButton(
             elevation: 5.0,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30.0)),
+            shape: new RoundedRectangleBorder(
+                borderRadius: new BorderRadius.circular(30.0)),
             color: Colors.blue,
-            child: Text(_isLoginForm ? 'Login' : 'Create account',
-                style: TextStyle(fontSize: 20.0, color: Colors.white)),
+            child: new Text(_isLoginForm ? 'Login' : 'Create account',
+                style: new TextStyle(fontSize: 20.0, color: Colors.white)),
             onPressed: validateAndSubmit,
           ),
         )

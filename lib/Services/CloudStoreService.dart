@@ -29,7 +29,8 @@ class CloudStoreService implements CloudStoreServiceType
         .setData({
           'id': user.id,
           'firstName': user.firstName,
-          'lastName': user.lastName
+          'lastName': user.lastName,
+          'email': user.email
         });
         return user;
     } catch (error) {

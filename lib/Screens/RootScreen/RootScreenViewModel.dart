@@ -1,44 +1,89 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:rxdart/rxdart.dart';
+import 'package:splitter/Models/AuthenticationState.dart';
 import 'package:splitter/Models/User.dart';
 import 'package:splitter/Services/AuthenticationService.dart';
 import 'package:splitter/Services/CloudStoreService.dart';
 
-enum AuthenticationState {
-  loggedIn,
-  loggeOut,
-  loading
-}
-
 abstract class RootScreenViewModelType {
-  Stream<Future<User>> get user;
+  AuthenticationServiceType authenticationService;
+  CloudStoreServiceType cloudStoreService;
+  BehaviorSubject<AuthenticationState> authenticationState;
+  BehaviorSubject<User> userSubject;
+  User user;
+  String userId;
+
+  void getCurrentAuthenticationState();
 }
 
-class RootScreenViewModel with ChangeNotifier implements RootScreenViewModelType {
+class RootScreenViewModel implements RootScreenViewModelType {
     RootScreenViewModel({@required this.authenticationService, 
-                         @required this.cloudStoreService});
+                         @required this.cloudStoreService}) {
+                           getCurrentAuthenticationState();
+                         }
 
-  final AuthenticationServiceType authenticationService;
-  final CloudStoreServiceType cloudStoreService;  
+  AuthenticationServiceType authenticationService;
+  CloudStoreServiceType cloudStoreService;
+  
+  BehaviorSubject<AuthenticationState> authenticationState = BehaviorSubject<AuthenticationState>();
+  BehaviorSubject<User> userSubject = BehaviorSubject<User>();
+  User user;
+  String userId;
 
-  Stream<Future<User>> get user {
-    return authenticationService.firebaseUser
-      .map(setStateForUser)
-      .map(convert);
-  }
-
-  setStateForUser(FirebaseUser user) {
-    if (user.uid != null) {
-      _state = AuthenticationState.loggedIn;
-    } else {
-      _state = AuthenticationState.loggeOut;
+  void getCurrentAuthenticationState() async {
+    listenToAuthenticationState();
+    listenToUserState();
+    try {
+      userId = await authenticationService.currentUserId();
+      if (userId != null) {
+        setLoggedIn();
+      } else {
+        setLoggedOut();
+      }
+    } catch (error) {
+      onError(error);
     }
   }
 
-  AuthenticationState _state = AuthenticationState.loading;
-
-  AuthenticationState currentState() {
-    return _state;
+  void listenToAuthenticationState() {
+    authenticationService.authenticationState.stream.listen((authState) {
+      switch (authState) {
+        case AuthenticationState.loggedIn:
+          setLoggedIn();
+          break;
+        case AuthenticationState.loggedOut:
+          setLoggedOut();
+          break;
+        case AuthenticationState.loading:
+          authenticationState.add(AuthenticationState.loading);
+          break;
+      }
+    });
   }
 
+  void listenToUserState() {
+    userSubject.stream.listen((user) {
+      if (user.isValid()) {
+        this.user = user;
+        authenticationState.add(AuthenticationState.loggedIn);
+      }
+    });
+  }
+
+  void setLoggedIn() async {
+    try {
+      userSubject.add(await cloudStoreService.fetchUserWithId(userId));
+    } catch (error) {
+      onError(error);
+    }
+  }
+
+  void setLoggedOut() {
+      authenticationState.add(AuthenticationState.loggedOut);
+  }
+
+  void onError(error) {
+    print("SPLITTER ERROR: Login Error at RootScreenViewModel: $error");
+    setLoggedOut();
+  }
 }

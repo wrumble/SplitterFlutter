@@ -1,11 +1,14 @@
 import 'dart:async';
+
 import 'package:rxdart/rxdart.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:splitter/Models/AuthenticationState.dart';
 
 abstract class AuthenticationServiceType
  {
-  Stream<FirebaseUser> get firebaseUser;
-  
+  BehaviorSubject<AuthenticationState> get authenticationState;
+
   Future<String> signIn(String email, String password);
   Future<String> signUp(String email, String password);
   Future<String> currentUserId();
@@ -16,39 +19,54 @@ abstract class AuthenticationServiceType
 
 class AuthenticationService implements AuthenticationServiceType
  {
-  final FirebaseAuth _authentication = FirebaseAuth.instance;
 
-  Stream<FirebaseUser> get firebaseUser {
-    _subjectCounter = new BehaviorSubject<int>.seeded(this.initialCount);
-    return _authentication.onAuthStateChanged;
+  final FirebaseAuth authentication = FirebaseAuth.instance;
+  BehaviorSubject<AuthenticationState> get authenticationState => BehaviorSubject<AuthenticationState>.seeded(AuthenticationState.loading);
+
+  AuthenticationService() {
+    authentication.onAuthStateChanged.listen(setAuthenticationState);
+  }
+
+  setAuthenticationState(FirebaseUser firebaseUser) {
+    if (firebaseUser != null) {
+      authenticationState.add(AuthenticationState.loggedIn);
+    } else {
+      authenticationState.add(AuthenticationState.loggedOut);
+    }
   }
 
   Future<String> signIn(String email, String password) async {
-    AuthResult result = await _authentication.signInWithEmailAndPassword(email: email, password: password);
+    AuthResult result = await authentication.signInWithEmailAndPassword(email: email, password: password);
     return result.user.uid;
   }
 
   Future<String> signUp(String email, String password) async {
-    AuthResult result = await _authentication.createUserWithEmailAndPassword(email: email, password: password);
+    AuthResult result = await authentication.createUserWithEmailAndPassword(email: email, password: password);
     return result.user.uid; 
   }
 
   Future<String> currentUserId() async {
-    FirebaseUser firebaseUser = await _authentication.currentUser();
-    return firebaseUser != null ? firebaseUser.uid : null;
+    FirebaseUser firebaseUser = await authentication.currentUser();
+    if (firebaseUser != null) {
+      return firebaseUser.uid;
+    } else {
+      return null;
+    }
   }
 
   Future<void> signOut() async {
-    return _authentication.signOut();
+    authenticationState.add(AuthenticationState.loggedOut);
+
+    return authentication.signOut();
   }
 
   Future<void> sendEmailVerification() async {
-    FirebaseUser user = await _authentication.currentUser();
+    FirebaseUser user = await authentication.currentUser();
     await user.sendEmailVerification();
   }
-
+ 
   Future<bool> isEmailVerified() async {
-    FirebaseUser user = await _authentication.currentUser();
+    FirebaseUser user = await authentication.currentUser();
     return user.isEmailVerified;
   }
 }
