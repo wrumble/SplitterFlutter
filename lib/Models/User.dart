@@ -1,8 +1,8 @@
 class User {
-  String id;
-  String firstName;
-  String lastName;
-  String email;
+  final String id;
+  final String firstName;
+  final String lastName;
+  final String email;
 
   User(this.id, this.firstName, this.lastName, this.email);
 

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:splitter/Models/User.dart';
 import 'package:splitter/Screens/HomeScreen/HomeScreenViewModel.dart';
 import 'package:splitter/Screens/LoginAndSignupScreen/LoginAndSignupScreen.dart';
 import 'package:splitter/Screens/LoginAndSignupScreen/LoginAndSignupScreenViewModel.dart';
-import 'package:splitter/Services/AuthenticationService.dart';
-import 'package:splitter/Services/CloudStoreService.dart';
+import 'package:splitter/Screens/RootScreen/RootScreenViewModel.dart';
 import 'package:splitter/Screens/HomeScreen/HomeScreen.dart';
 
 enum AuthStatus {
@@ -14,10 +14,9 @@ enum AuthStatus {
 }
 
 class RootScreen extends StatefulWidget {
-  RootScreen({@required this.authenticationService, @required this.cloudStoreService});
+  RootScreen({@required this.viewModel});
 
-  final AuthenticationServiceType authenticationService;
-  final CloudStoreServiceType cloudStoreService;
+  final RootScreenViewModelType viewModel;
 
   @override
   State<StatefulWidget> createState() => RootScreenState();
@@ -71,6 +70,7 @@ class RootScreenState extends State<RootScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = Provider.of<RootScreenViewModel>(context);
     switch (authStatus) {
       case AuthStatus.NOT_DETERMINED:
         return buildWaitingScreen();

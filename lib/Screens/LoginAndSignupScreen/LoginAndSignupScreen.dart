@@ -7,16 +7,11 @@ class LoginAndSignupScreen extends StatefulWidget {
   final LoginAndSignupScreenViewModelType viewModel;
 
   @override
-  State<StatefulWidget> createState() => new _LoginAndSignupScreenState();
+  State<StatefulWidget> createState() => LoginAndSignupScreenState();
 }
 
-class _LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
-  final _formKey = new GlobalKey<FormState>();
-
-  String _firstName;
-  String _lastName;
-  String _email;
-  String _password;
+class LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
+  final _formKey = GlobalKey<FormState>();
 
   bool _isLoginForm;
 
@@ -31,7 +26,7 @@ class _LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
 
   // Perform login or signup
   void validateAndSubmit() {
-    final user = new User(id)
+    final user = User(id)
   }
 
   @override
@@ -230,3 +225,47 @@ class _LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
     super.dispose();
   }
 }
+
+typedef void EntryFieldCallback (String value);
+
+class EntryField extends StatelessWidget {
+  EntryField({@required this.icon, 
+              @required this.hintText, 
+              @required this.errorText, 
+              @required this.onSaved, 
+              this.obscureText = false,
+              this.capitalization = TextCapitalization.none,
+              this.padding = const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0)});
+
+    final IconData icon;
+    final String hintText;
+    final String errorText;
+
+    final obscureText;
+    final TextCapitalization capitalization;
+    final EdgeInsets padding;
+
+    final EntryFieldCallback onSaved;
+
+    @override
+    Widget build(BuildContext context) {
+      return Padding(
+        padding: padding,
+        child: TextFormField(
+          maxLines: 1,
+          obscureText: obscureText,
+          keyboardType: TextInputType.text,
+          autofocus: false,
+          textCapitalization: TextCapitalization.words,
+          decoration: InputDecoration(
+              hintText: hintText,
+              icon: Icon(
+                icon,
+                color: Colors.grey,
+              )),
+          validator: (value) => value.isEmpty ?  errorText: null,
+          onSaved: (value) => onSaved(value.trim()),
+        ),
+      );
+    }
+  }

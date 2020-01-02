@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'package:rxdart/rxdart.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class AuthenticationServiceType
  {
+  Stream<FirebaseUser> get firebaseUser;
+  
   Future<String> signIn(String email, String password);
   Future<String> signUp(String email, String password);
   Future<String> currentUserId();
@@ -14,6 +17,11 @@ abstract class AuthenticationServiceType
 class AuthenticationService implements AuthenticationServiceType
  {
   final FirebaseAuth _authentication = FirebaseAuth.instance;
+
+  Stream<FirebaseUser> get firebaseUser {
+    _subjectCounter = new BehaviorSubject<int>.seeded(this.initialCount);
+    return _authentication.onAuthStateChanged;
+  }
 
   Future<String> signIn(String email, String password) async {
     AuthResult result = await _authentication.signInWithEmailAndPassword(email: email, password: password);
@@ -36,7 +44,7 @@ class AuthenticationService implements AuthenticationServiceType
 
   Future<void> sendEmailVerification() async {
     FirebaseUser user = await _authentication.currentUser();
-    user.sendEmailVerification();
+    await user.sendEmailVerification();
   }
 
   Future<bool> isEmailVerified() async {
