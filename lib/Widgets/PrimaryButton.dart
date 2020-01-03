@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 class PrimaryButton extends StatelessWidget {
   PrimaryButton({@required this.text, @required this.onPressed});
@@ -9,20 +10,14 @@ class PrimaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
-        child: SizedBox(
-          height: 40.0,
-          child: RaisedButton(
-            elevation: 5.0,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30.0)),
+        padding: EdgeInsets.fromLTRB(0.0, 25.0, 0.0, 0.0),
+        child: PlatformButton(
             color: Colors.blue,
             child: Text(
                 text,
-                style: TextStyle(fontSize: 20.0, color: Colors.white)),
+                style: TextStyle(fontSize: 22.0, color: Colors.white)),
             onPressed: onPressed,
           ),
-        )
       );
   }
 }

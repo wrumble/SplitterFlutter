@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:splitter/Widgets/NullWidget.dart';
 
 class LoginErrorMessage extends StatelessWidget {
@@ -14,10 +15,10 @@ class LoginErrorMessage extends StatelessWidget {
         if (snapshot.data != null) {
           return Padding(
             padding: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
-            child: Text(
+            child: PlatformText(
                   snapshot.data,
                   style: TextStyle(
-                      fontSize: 13.0,
+                      fontSize: 15.0,
                       color: Colors.red,
                       height: 1.0,
                       fontWeight: FontWeight.w300),
