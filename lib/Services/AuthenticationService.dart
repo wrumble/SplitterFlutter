@@ -5,16 +5,14 @@ import 'package:rxdart/rxdart.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:splitter/Models/AuthenticationState.dart';
 
-abstract class AuthenticationServiceType
- {
+abstract class AuthenticationServiceType {
   BehaviorSubject<AuthenticationState> get authenticationState;
 
   Future<String> signIn(String email, String password);
   Future<String> signUp(String email, String password);
   Future<String> currentUserId();
-  Future<bool> isEmailVerified();
-  Future<void> sendEmailVerification();
   Future<void> signOut();
+  void listenToAuthStateChange(); 
 }
 
 class AuthenticationService implements AuthenticationServiceType {
@@ -23,11 +21,15 @@ class AuthenticationService implements AuthenticationServiceType {
   BehaviorSubject<AuthenticationState> authenticationState;
 
   AuthenticationService() {
+    listenToAuthStateChange();
+  }
+
+  void listenToAuthStateChange() {
     authenticationState = BehaviorSubject<AuthenticationState>.seeded(AuthenticationState.loading);
     authentication.onAuthStateChanged.listen(setAuthenticationState);
   }
 
-  setAuthenticationState(FirebaseUser firebaseUser) {
+  void setAuthenticationState(FirebaseUser firebaseUser) {
     if (firebaseUser != null) {
       authenticationState.add(AuthenticationState.loggedIn);
     } else {
@@ -56,15 +58,5 @@ class AuthenticationService implements AuthenticationServiceType {
 
   Future<void> signOut() async {
     return authentication.signOut();
-  }
-
-  Future<void> sendEmailVerification() async {
-    FirebaseUser user = await authentication.currentUser();
-    await user.sendEmailVerification();
-  }
- 
-  Future<bool> isEmailVerified() async {
-    FirebaseUser user = await authentication.currentUser();
-    return user.isEmailVerified;
   }
 }

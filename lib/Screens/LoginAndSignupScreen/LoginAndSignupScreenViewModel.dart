@@ -10,10 +10,8 @@ enum FormType {
 }
 
 abstract class LoginAndSignupScreenViewModelType {  
-  String email;
+  User user;
   String password;
-  String firstName;
-  String lastName;
   BehaviorSubject<FormType> get formType;
   BehaviorSubject<String> get errorMessage;
   BehaviorSubject<bool> get isLoading;
@@ -32,10 +30,8 @@ class LoginAndSignupScreenViewModel implements LoginAndSignupScreenViewModelType
   final AuthenticationServiceType authenticationService;
   final CloudStoreServiceType cloudStoreService;
   
-  String email;
+  User user = User(id: null, firstName: null, lastName: null, email: null);
   String password;
-  String firstName;
-  String lastName;
 
   BehaviorSubject<FormType> formType;
   BehaviorSubject<String> errorMessage;
@@ -46,24 +42,21 @@ class LoginAndSignupScreenViewModel implements LoginAndSignupScreenViewModelType
     errorMessage = BehaviorSubject<String>.seeded(null);
     isLoading = BehaviorSubject<bool>.seeded(false);
   }
-  void signIn() async {
+  void login() async {
     try {
-      String userId = await authenticationService.signIn(email, password);
-      User user = await cloudStoreService.fetchUserWithId(userId);
-      print('Signed in: ${user.firstName} ${user.lastName}');
+      String userId = await authenticationService.signIn(user.email, password);
+      user = await cloudStoreService.fetchUserWithId(userId);
     } catch (error) {
-      print(error);
+      errorMessage.add(error.message);
     }
   }
 
   void signUp() async {
     try {
-      String userId = await authenticationService.signUp(email, password);
-      User user = User(id: userId, firstName: firstName, lastName: lastName, email: email);
-      await cloudStoreService.createUser(user);
-      print('Signed up user: ${user.id}');
+      user.id = await authenticationService.signUp(user.email, password);
+      user = await cloudStoreService.createUser(user);
     } catch (error) {
-        print(error);
+        errorMessage.add(error.message);
     }
   }
 
@@ -71,10 +64,8 @@ class LoginAndSignupScreenViewModel implements LoginAndSignupScreenViewModelType
     if (fieldsAreValid()) {
       errorMessage.add(null);
       isLoading.add(true);
-      isLoginForm() ? await signIn() : await signUp();
+      isLoginForm() ? await login() : await signUp();
       isLoading.add(false);
-    } else {
-      errorMessage.add("Invalid Field Entry");
     }
   }
 
@@ -87,19 +78,34 @@ class LoginAndSignupScreenViewModel implements LoginAndSignupScreenViewModelType
   }
 
   bool emailAndPasswordAreValid() {
-    return email != null && passWordIsValid();
+    return emailIsValid() && passWordIsValid();
+  }
+
+  bool emailIsValid() {
+    return user.email == null ? setErrorAndFail("Email can't be empty") : true;
   }
 
   bool passWordIsValid() {
     if (password != null) {
-      return password.length >= 6;
+      return password.length < 6 ? setErrorAndFail("Password must contain 6 characters") : true;
     } else {
-      return false;
+      return setErrorAndFail("Password can't be empty");
     }
   }
 
   bool namesAreValid() {
-    return firstName.isNotEmpty && lastName.isNotEmpty;
+    if (user.firstName == null) {
+      return setErrorAndFail("First name can't be empty");
+    } else if (user.lastName == null) {
+      return setErrorAndFail("Last name can't be empty");
+    } else {
+      return true;
+    }
+  }
+
+  bool setErrorAndFail(String error) {
+    errorMessage.add(error);
+    return false;
   }
 
   void toggleView() {

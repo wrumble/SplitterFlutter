@@ -25,7 +25,7 @@ class RootScreenViewModel implements RootScreenViewModelType {
   BehaviorSubject<AuthenticationState> authenticationState = BehaviorSubject<AuthenticationState>();
   BehaviorSubject<User> userSubject = BehaviorSubject<User>();
 
-  void listenToAuthenticationState() {
+  Future<void> listenToAuthenticationState() async {
     authenticationService.authenticationState.listen((authState) {
       switch (authState) {
         case AuthenticationState.loggedIn:

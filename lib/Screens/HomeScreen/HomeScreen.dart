@@ -12,7 +12,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Logged In as ${user.firstName} ${user.lastName}'),
+          title: Text('Splitter'),
           actions: <Widget>[
           FlatButton(
               child: Text('Logout',

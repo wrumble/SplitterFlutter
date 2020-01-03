@@ -6,6 +6,7 @@ import 'package:splitter/Screens/LoginAndSignupScreen/LoginAndSignupScreen.dart'
 import 'package:splitter/Screens/LoginAndSignupScreen/LoginAndSignupScreenViewModel.dart';
 import 'package:splitter/Screens/RootScreen/RootScreenViewModel.dart';
 import 'package:splitter/Screens/HomeScreen/HomeScreen.dart';
+import 'package:splitter/Widgets/WaitingIndicator.dart';
 
 class RootScreen extends StatelessWidget {
 
@@ -25,7 +26,7 @@ class RootScreen extends StatelessWidget {
           case AuthenticationState.loggedIn:
               return homeScreen();
           default:
-            return waitingScreen();
+            return WaitingIndicator();
         }
     });
   }
@@ -41,14 +42,5 @@ class RootScreen extends StatelessWidget {
                                                     cloudStoreService: viewModel.cloudStoreService);
      return HomeScreen(user: viewModel.userSubject.value,
                        viewModel: homeScreenViewModel);
-  }
-
-  Widget waitingScreen() {
-    return Scaffold(
-      body: Container(
-        alignment: Alignment.center,
-        child: CircularProgressIndicator(),
-      ),
-    );
   }
 }
