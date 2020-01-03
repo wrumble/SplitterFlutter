@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:splitter/Widgets/LoginErrorMessage.dart';
 import 'package:splitter/Widgets/LoginTextField.dart';
 import 'package:splitter/Widgets/NullWidget.dart';
@@ -14,9 +15,15 @@ class LoginAndSignupScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('Splitter'),
+    return PlatformScaffold(
+        backgroundColor: Colors.white,
+        appBar: PlatformAppBar(
+          android: (_) => MaterialAppBarData(centerTitle: true),
+          title: PlatformText('Splitter', 
+                      style: TextStyle(color: Colors.white, 
+                                       fontSize: 26
+                             )
+                ),
         ),
         body: Stack(
           children: <Widget>[
@@ -43,8 +50,8 @@ class LoginAndSignupScreen extends StatelessWidget {
           builder: (context, snapshot) {
             List<Widget> formFields = [emailField(),
                                        passwordField(),
-                                       toggleButton(),
                                        submitButton(),
+                                       toggleButton(),
                                        errorMessage()];
             if (snapshot.data == FormType.signUp) {
               List<Widget> nameFields = [firstNameField(), lastNameField()];
@@ -70,14 +77,16 @@ class LoginAndSignupScreen extends StatelessWidget {
     Function(String) onChanged = (value) => viewModel.user.firstName = value.trim();
       return LoginTextField(Icons.person,
                             'First Name',
-                            onChanged);
+                            onChanged,
+                            textCapitalization: TextCapitalization.words);
   }
 
   Widget lastNameField() {
     Function(String) onChanged = (value) => viewModel.user.lastName = value.trim();
     return LoginTextField(Icons.person,
                           'Last Name',
-                          onChanged);
+                          onChanged,
+                          textCapitalization: TextCapitalization.words);
   }
 
   Widget emailField() {
