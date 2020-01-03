@@ -1,81 +1,10 @@
 import 'package:flutter/material.dart';
 import 'LoginAndSignupScreenViewModel.dart';
 
-class LoginAndSignupScreen extends StatefulWidget {
-  LoginAndSignupScreen({@required this.viewModel});
+class LoginAndSignupScreen extends StatelessWidget {
+    LoginAndSignupScreen({@required this.viewModel});
 
   final LoginAndSignupScreenViewModelType viewModel;
-
-  @override
-  State<StatefulWidget> createState() => LoginAndSignupScreenState();
-}
-
-class LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
-  final _formKey = GlobalKey<FormState>();
-
-  String _firstName;
-  String _lastName;
-  String _email;
-  String _password;
-  String _errorMessage;
-
-  bool _isLoginForm;
-  bool _isLoading;
-
-  bool validateAndSave() {
-    final form = _formKey.currentState;
-    if (form.validate()) {
-      form.save();
-      return true;
-    }
-    return false;
-  }
-
-  // Perform login or signup
-  void validateAndSubmit() async {
-    setState(() {
-      _errorMessage = "";
-      _isLoading = true;
-    });
-    if (validateAndSave()) {
-      try {
-        if (_isLoginForm) {
-           await widget.viewModel.signIn(_email, _password);
-        } else {
-          await widget.viewModel.signUp(_email, _password, _firstName, _lastName);
-        }
-        setState(() {
-          _isLoading = false;
-        });
-      } catch (error) {
-        print('Error: $error');
-        setState(() {
-          _isLoading = false;
-          _errorMessage = error;
-        });
-      }
-    }
-  }
-
-  @override
-  void initState() {
-    _errorMessage = "";
-    _isLoading = false;
-    _isLoginForm = true;
-    super.initState();
-  }
-
-  void resetForm() {
-    _formKey.currentState.reset();
-    _errorMessage = "";
-  }
-
-  void toggleFormMode() {
-    resetForm();
-    setState(() {
-      _isLoginForm = !_isLoginForm;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,20 +14,24 @@ class LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
         ),
         body: Stack(
           children: <Widget>[
-            _showForm(),
-            _showCircularProgress(),
+            formFields(),
+            circularProgressIndicator(),
           ],
         ));
   }
 
-  Widget _showCircularProgress() {
-    if (_isLoading) {
-      return Center(child: CircularProgressIndicator());
-    }
-    return Container(
-      height: 0.0,
-      width: 0.0,
+  Widget circularProgressIndicator() {
+    return StreamBuilder<bool>(
+      stream: viewModel.isLoading.stream,
+      initialData: false,
+      builder: (context, snapshot) {
+        return snapshot.data ? Center(child: CircularProgressIndicator()) : noView();
+      }
     );
+  }
+
+  Widget noView() {
+    return Container(height: 0, width: 0);
   }
 
 //  void _showVerifyEmailSentDialog() {
@@ -124,43 +57,57 @@ class LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
 //    );
 //  }
 
-  Widget _showForm() {
-    bool notNull(Object o) => o != null;
-    return Container(
-        padding: EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            shrinkWrap: true,
-            children: <Widget>[
-              _isLoginForm ? null : showFirstNameInput(),
-              _isLoginForm ? null : showLastNameInput(),
-              showEmailInput(),
-              showPasswordInput(),
-              showPrimaryButton(),
-              showSecondaryButton(),
-              showErrorMessage(),
-            ].where(notNull).toList(),
-          ),
-        ));
+  Widget formFields() {
+        return StreamBuilder<FormType>(
+          stream: viewModel.formType.stream,
+          initialData: FormType.login,
+          builder: (context, snapshot) {
+            List<Widget> formFields = [emailField(),
+                                       passwordField(),
+                                       toggleButton(),
+                                       submitButton(),
+                                       errorMessage()];
+            if (snapshot.data == FormType.signUp) {
+              List<Widget> nameFields = [firstNameField(), lastNameField()];
+              formFields.insertAll(0, nameFields);
+            }
+            return Container(
+              padding: EdgeInsets.all(16.0),
+              child: Form(
+                child: ListView(
+                  shrinkWrap: true,
+                  children: formFields,
+                ),
+              ));
+          }
+        );
   }
 
-  Widget showErrorMessage() {
-    if (_errorMessage.isNotEmpty && _errorMessage != null) {
-      return Text(
-        _errorMessage,
-        style: TextStyle(
-            fontSize: 13.0,
-            color: Colors.red,
-            height: 1.0,
-            fontWeight: FontWeight.w300),
-      );
-    } else {
-      return null;
-    }
+  Widget errorMessage() {
+    return StreamBuilder<String>(
+      stream: viewModel.errorMessage.stream,
+      builder: (context, snapshot) {
+        if (snapshot.data != null) {
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+            child: Text(
+                  snapshot.data,
+                  style: TextStyle(
+                      fontSize: 13.0,
+                      color: Colors.red,
+                      height: 1.0,
+                      fontWeight: FontWeight.w300),
+                  textAlign: TextAlign.center,
+              )
+          );
+        } else {
+          return noView();
+        }
+      }
+    );
   }
 
-    Widget showFirstNameInput() {
+    Widget firstNameField() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
       child: TextFormField(
@@ -174,13 +121,12 @@ class LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
               Icons.person,
               color: Colors.grey,
             )),
-        validator: (value) => value.isEmpty ? 'First Name can\'t be empty' : null,
-        onSaved: (value) => _firstName = value.trim(),
+        onChanged: (value) => viewModel.firstName = value.trim(),
       ),
     );
   }
 
-  Widget showLastNameInput() {
+  Widget lastNameField() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
       child: TextFormField(
@@ -194,13 +140,12 @@ class LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
               Icons.person,
               color: Colors.grey,
             )),
-        validator: (value) => value.isEmpty ? 'Last Name can\'t be empty' : null,
-        onSaved: (value) => _lastName = value.trim(),
+        onChanged: (value) => viewModel.lastName = value.trim(),
       ),
     );
   }
 
-  Widget showEmailInput() {
+  Widget emailField() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
       child: TextFormField(
@@ -213,13 +158,12 @@ class LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
               Icons.mail,
               color: Colors.grey,
             )),
-        validator: (value) => value.isEmpty ? 'Email can\'t be empty' : null,
-        onSaved: (value) => _email = value.trim(),
+        onChanged: (value) => viewModel.email = value.trim(),
       ),
     );
   }
 
-  Widget showPasswordInput() {
+  Widget passwordField() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
       child: TextFormField(
@@ -232,23 +176,26 @@ class LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
               Icons.lock,
               color: Colors.grey,
             )),
-        validator: (value) => value.isEmpty ? 'Password can\'t be empty' : null,
-        onSaved: (value) => _password = value.trim(),
+        onChanged: (value) => viewModel.password = value.trim(),
       ),
     );
   }
 
-  Widget showSecondaryButton() {
-    return FlatButton(
-        child: Text(
-            _isLoginForm ? 'Create an account' : 'Have an account? Sign in',
-            style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300)),
-        onPressed: toggleFormMode);
+  Widget toggleButton() {
+    return Padding(
+        padding: EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
+        child: FlatButton(
+                child: Text(
+                    viewModel.isLoginForm() ? 'Create an account' : 'Have an account? Sign in',
+                    style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300)),
+                onPressed: viewModel.toggleView
+            )
+    );
   }
 
-  Widget showPrimaryButton() {
+  Widget submitButton() {
     return Padding(
-        padding: EdgeInsets.fromLTRB(0.0, 45.0, 0.0, 0.0),
+        padding: EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
         child: SizedBox(
           height: 40.0,
           child: RaisedButton(
@@ -256,9 +203,9 @@ class LoginAndSignupScreenState extends State<LoginAndSignupScreen> {
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30.0)),
             color: Colors.blue,
-            child: Text(_isLoginForm ? 'Login' : 'Create account',
+            child: Text(viewModel.isLoginForm() ? 'Login' : 'Create account',
                 style: TextStyle(fontSize: 20.0, color: Colors.white)),
-            onPressed: validateAndSubmit,
+            onPressed: viewModel.onSubmit,
           ),
         )
       );

@@ -10,16 +10,13 @@ abstract class RootScreenViewModelType {
   CloudStoreServiceType cloudStoreService;
   BehaviorSubject<AuthenticationState> authenticationState;
   BehaviorSubject<User> userSubject;
-  User user;
-  String userId;
-
-  void getCurrentAuthenticationState();
 }
 
 class RootScreenViewModel implements RootScreenViewModelType {
     RootScreenViewModel({@required this.authenticationService, 
                          @required this.cloudStoreService}) {
-                           getCurrentAuthenticationState();
+                               listenToAuthenticationState();
+                               listenToUserState();
                          }
 
   AuthenticationServiceType authenticationService;
@@ -27,26 +24,9 @@ class RootScreenViewModel implements RootScreenViewModelType {
   
   BehaviorSubject<AuthenticationState> authenticationState = BehaviorSubject<AuthenticationState>();
   BehaviorSubject<User> userSubject = BehaviorSubject<User>();
-  User user;
-  String userId;
-
-  void getCurrentAuthenticationState() async {
-    listenToAuthenticationState();
-    listenToUserState();
-    try {
-      userId = await authenticationService.currentUserId();
-      if (userId != null) {
-        setLoggedIn();
-      } else {
-        setLoggedOut();
-      }
-    } catch (error) {
-      onError(error);
-    }
-  }
 
   void listenToAuthenticationState() {
-    authenticationService.authenticationState.stream.listen((authState) {
+    authenticationService.authenticationState.listen((authState) {
       switch (authState) {
         case AuthenticationState.loggedIn:
           setLoggedIn();
@@ -62,9 +42,8 @@ class RootScreenViewModel implements RootScreenViewModelType {
   }
 
   void listenToUserState() {
-    userSubject.stream.listen((user) {
-      if (user.isValid()) {
-        this.user = user;
+    userSubject.listen((user) {
+      if (user != null && user.isValid()) {
         authenticationState.add(AuthenticationState.loggedIn);
       }
     });
@@ -72,7 +51,9 @@ class RootScreenViewModel implements RootScreenViewModelType {
 
   void setLoggedIn() async {
     try {
-      userSubject.add(await cloudStoreService.fetchUserWithId(userId));
+      String userId = await authenticationService.currentUserId();
+      User user = await cloudStoreService.fetchUserWithId(userId);
+      userSubject.add(user);
     } catch (error) {
       onError(error);
     }

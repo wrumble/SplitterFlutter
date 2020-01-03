@@ -12,8 +12,7 @@ class User {
         @required this.email});
 
   isValid() {
-    return this != null &&
-            id != null &&
+    return id != null &&
             firstName != null &&
             lastName != null &&
             email != null;

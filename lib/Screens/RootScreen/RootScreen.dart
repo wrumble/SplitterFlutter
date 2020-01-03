@@ -7,18 +7,43 @@ import 'package:splitter/Screens/LoginAndSignupScreen/LoginAndSignupScreenViewMo
 import 'package:splitter/Screens/RootScreen/RootScreenViewModel.dart';
 import 'package:splitter/Screens/HomeScreen/HomeScreen.dart';
 
-class RootScreen extends StatefulWidget {
+class RootScreen extends StatelessWidget {
+
   RootScreen({@required this.viewModel});
 
   final RootScreenViewModelType viewModel;
 
   @override
-  State<StatefulWidget> createState() => RootScreenState();
-}
+  Widget build(BuildContext context) {
+    return StreamBuilder<AuthenticationState>(
+      initialData: AuthenticationState.loading,
+      stream: viewModel.authenticationState,
+      builder: (context, snapshot) {
+        switch (snapshot.data) {
+          case AuthenticationState.loggedOut:
+            return getLoginAndSignupScreen();
+          case AuthenticationState.loggedIn:
+              return homeScreen();
+          default:
+            return waitingScreen();
+        }
+    });
+  }
 
-class RootScreenState extends State<RootScreen> {
+  LoginAndSignupScreen getLoginAndSignupScreen() {
+    final loginAndSignupScreenViewModel = LoginAndSignupScreenViewModel(authenticationService: viewModel.authenticationService,
+                                                            cloudStoreService: viewModel.cloudStoreService);
+    return LoginAndSignupScreen(viewModel: loginAndSignupScreenViewModel);
+  }
 
-  Widget buildWaitingScreen() {
+  HomeScreen homeScreen() {
+    final homeScreenViewModel = HomeScreenViewModel(authenticationService: viewModel.authenticationService,
+                                                    cloudStoreService: viewModel.cloudStoreService);
+     return HomeScreen(user: viewModel.userSubject.value,
+                       viewModel: homeScreenViewModel);
+  }
+
+  Widget waitingScreen() {
     return Scaffold(
       body: Container(
         alignment: Alignment.center,
@@ -26,64 +51,4 @@ class RootScreenState extends State<RootScreen> {
       ),
     );
   }
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<AuthenticationState>(
-      initialData: AuthenticationState.loading,
-      stream: widget.viewModel.authenticationState.stream,
-      builder: (context, snapshot) {
-        print(snapshot.data);
-        switch (snapshot.data) {
-          case AuthenticationState.loading:
-            return buildWaitingScreen();
-            break;
-          case AuthenticationState.loggedOut:
-            final viewModel = LoginAndSignupScreenViewModel(authenticationService: widget.viewModel.authenticationService,
-                                                            cloudStoreService: widget.viewModel.cloudStoreService);
-            return LoginAndSignupScreen(viewModel: viewModel);
-            break;
-          case AuthenticationState.loggedIn:
-              final viewModel = HomeScreenViewModel(authenticationService: widget.viewModel.authenticationService,
-                                                    cloudStoreService: widget.viewModel.cloudStoreService);
-              return HomeScreen(
-                user: widget.viewModel.user,
-                viewModel: viewModel,
-              );
-            break;
-          default:
-            return buildWaitingScreen();
-        }
-    });
-  }
-
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   switch (widget.viewModel.authenticationState) {
-  //     case AuthenticationState.undetermined:
-  //       return buildWaitingScreen();
-  //       break;
-  //     case AuthenticationState.loggedOut:
-  //       final viewModel = LoginAndSignupScreenViewModel(authenticationService: widget.viewModel.authenticationService,
-  //                         cloudStoreService: widget.viewModel.cloudStoreService,
-  //                         loginCallback: loginCallBack);
-  //       return LoginAndSignupScreen(viewModel: viewModel);
-  //       break;
-  //     case AuthenticationState.loggedIn:
-  //       if (_user != null) {
-  //         final viewModel = HomeScreenViewModel(authenticationService: widget.viewModel.authenticationService,
-  //                                               cloudStoreService: widget.viewModel.cloudStoreService);
-  //         return HomeScreen(
-  //           user: _user,
-  //           viewModel: viewModel,
-  //         );
-  //       } else {
-  //         return buildWaitingScreen();
-  //       }
-  //       break;
-  //     default:
-  //       return buildWaitingScreen();
-  //   }
-  // }
 }

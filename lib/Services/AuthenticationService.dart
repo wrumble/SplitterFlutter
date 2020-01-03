@@ -17,13 +17,13 @@ abstract class AuthenticationServiceType
   Future<void> signOut();
 }
 
-class AuthenticationService implements AuthenticationServiceType
- {
+class AuthenticationService implements AuthenticationServiceType {
 
   final FirebaseAuth authentication = FirebaseAuth.instance;
-  BehaviorSubject<AuthenticationState> get authenticationState => BehaviorSubject<AuthenticationState>.seeded(AuthenticationState.loading);
+  BehaviorSubject<AuthenticationState> authenticationState;
 
   AuthenticationService() {
+    authenticationState = BehaviorSubject<AuthenticationState>.seeded(AuthenticationState.loading);
     authentication.onAuthStateChanged.listen(setAuthenticationState);
   }
 
@@ -55,8 +55,6 @@ class AuthenticationService implements AuthenticationServiceType
   }
 
   Future<void> signOut() async {
-    authenticationState.add(AuthenticationState.loggedOut);
-
     return authentication.signOut();
   }
 

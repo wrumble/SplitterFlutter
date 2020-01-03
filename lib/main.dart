@@ -32,6 +32,6 @@ class SplitterState extends State<Splitter> {
                 primarySwatch: Colors.blue,
               ),
               home: RootScreen(viewModel: rootViewModel),
-            );
+    );
   }
 }
