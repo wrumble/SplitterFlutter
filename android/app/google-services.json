@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "893817437894",
+    "firebase_url": "https://splitterflutter-864d9.firebaseio.com",
+    "project_id": "splitterflutter-864d9",
+    "storage_bucket": "splitterflutter-864d9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:893817437894:android:503e8f82d9738239dba1c7",
+        "android_client_info": {
+          "package_name": "com.example.splitter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "893817437894-tdeqkfbv8eu36vt3isoi420n25i7s6bo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBIIEvpVXUPY9wRrVIHl6_y7BZsUjrML4w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "893817437894-tdeqkfbv8eu36vt3isoi420n25i7s6bo.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "893817437894-jgade8gpt22rhua5d6fbo9j5srnq6rh9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.rumblewayne.Runner"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
