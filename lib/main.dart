@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -22,7 +23,7 @@ class SplitterState extends State<Splitter> {
   RootScreenViewModelType rootViewModel;
   @override
   void initState() {
-        rootViewModel = RootScreenViewModel(authenticationService: AuthenticationService(),
+        rootViewModel = RootScreenViewModel(authenticationService: AuthenticationService(firebaseAuthentication: FirebaseAuth.instance),
                                               cloudStoreService: CloudStoreService());
     super.initState();
   }

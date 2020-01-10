@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,17 +17,17 @@ abstract class AuthenticationServiceType {
 }
 
 class AuthenticationService implements AuthenticationServiceType {
-
-  final FirebaseAuth authentication = FirebaseAuth.instance;
-  BehaviorSubject<AuthenticationState> authenticationState;
-
-  AuthenticationService() {
+  AuthenticationService({@required this.firebaseAuthentication}) {
     listenToAuthStateChange();
   }
 
+  final FirebaseAuth firebaseAuthentication;
+  BehaviorSubject<AuthenticationState> authenticationState;
+
+
   void listenToAuthStateChange() {
     authenticationState = BehaviorSubject<AuthenticationState>.seeded(AuthenticationState.loading);
-    authentication.onAuthStateChanged.listen(setAuthenticationState);
+    firebaseAuthentication.onAuthStateChanged.listen(setAuthenticationState);
   }
 
   void setAuthenticationState(FirebaseUser firebaseUser) {
@@ -38,17 +39,17 @@ class AuthenticationService implements AuthenticationServiceType {
   }
 
   Future<String> signIn(String email, String password) async {
-    AuthResult result = await authentication.signInWithEmailAndPassword(email: email, password: password);
+    AuthResult result = await firebaseAuthentication.signInWithEmailAndPassword(email: email, password: password);
     return result.user.uid;
   }
 
   Future<String> signUp(String email, String password) async {
-    AuthResult result = await authentication.createUserWithEmailAndPassword(email: email, password: password);
+    AuthResult result = await firebaseAuthentication.createUserWithEmailAndPassword(email: email, password: password);
     return result.user.uid; 
   }
 
   Future<String> currentUserId() async {
-    FirebaseUser firebaseUser = await authentication.currentUser();
+    FirebaseUser firebaseUser = await firebaseAuthentication.currentUser();
     if (firebaseUser != null) {
       return firebaseUser.uid;
     } else {
@@ -57,6 +58,6 @@ class AuthenticationService implements AuthenticationServiceType {
   }
 
   Future<void> signOut() async {
-    return authentication.signOut();
+    return firebaseAuthentication.signOut();
   }
 }
