@@ -1,5 +1,6 @@
 enum AuthenticationState {
   loggedIn,
   loggedOut,
-  loading
+  loading,
+  error
 }

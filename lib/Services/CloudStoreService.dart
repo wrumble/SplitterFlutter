@@ -1,20 +1,23 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:splitter/Models/User.dart';
 
-abstract class CloudStoreServiceType
- {
+abstract class CloudStoreServiceType {
+  Firestore cloudStore;
+
   Future<User> fetchUserWithId(String id);
   Future<User> createUser(User user);
 }
 
-class CloudStoreService implements CloudStoreServiceType
-{
-  final Firestore _cloudStore = Firestore.instance;
+class CloudStoreService implements CloudStoreServiceType {
+   CloudStoreService({@required this.cloudStore});
+   
+  Firestore cloudStore;
 
   Future<User> fetchUserWithId(String userId) async {
     try {
-      DocumentSnapshot userDocument = await _cloudStore.document("Users/$userId").get();
+      DocumentSnapshot userDocument = await cloudStore.document("Users/$userId").get();
       return User.fromJson(userDocument.data);
     } catch (error) {
       print("Error fetching user: $error");
@@ -24,7 +27,7 @@ class CloudStoreService implements CloudStoreServiceType
 
     Future<User> createUser(User user) async {
     try {
-      await _cloudStore.collection("Users")
+      await cloudStore.collection("Users")
         .document(user.id)
         .setData({
           'id': user.id,

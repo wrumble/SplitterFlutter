@@ -1,4 +1,3 @@
-import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
@@ -7,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:splitter/Models/AuthenticationState.dart';
 
 abstract class AuthenticationServiceType {
+  FirebaseAuth firebaseAuthentication;
   BehaviorSubject<AuthenticationState> get authenticationState;
 
   Future<String> signIn(String email, String password);
@@ -21,12 +21,10 @@ class AuthenticationService implements AuthenticationServiceType {
     listenToAuthStateChange();
   }
 
-  final FirebaseAuth firebaseAuthentication;
-  BehaviorSubject<AuthenticationState> authenticationState;
-
+  FirebaseAuth firebaseAuthentication;
+  BehaviorSubject<AuthenticationState> authenticationState = BehaviorSubject<AuthenticationState>.seeded(AuthenticationState.loading);
 
   void listenToAuthStateChange() {
-    authenticationState = BehaviorSubject<AuthenticationState>.seeded(AuthenticationState.loading);
     firebaseAuthentication.onAuthStateChanged.listen(setAuthenticationState);
   }
 

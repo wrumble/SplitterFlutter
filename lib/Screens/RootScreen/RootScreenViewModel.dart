@@ -38,6 +38,9 @@ class RootScreenViewModel implements RootScreenViewModelType {
         case AuthenticationState.loading:
           authenticationState.add(AuthenticationState.loading);
           break;
+        case AuthenticationState.error:
+          authenticationState.add(AuthenticationState.error);
+          break;
       }
     });
   }
