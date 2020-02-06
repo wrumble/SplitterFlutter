@@ -65,7 +65,6 @@ class RootScreenViewModel implements RootScreenViewModelType {
   }
 
   void onError(error) {
-    print("SPLITTER ERROR: Login Error at RootScreenViewModel: $error");
     setLoggedOut();
   }
 }
