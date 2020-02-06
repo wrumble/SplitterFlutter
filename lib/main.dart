@@ -26,7 +26,7 @@ class SplitterState extends State<Splitter> {
   @override
   void initState() {
         rootViewModel = RootScreenViewModel(authenticationService: AuthenticationService(firebaseAuthentication: FirebaseAuth.instance),
-                                              cloudStoreService: CloudStoreService(cloudStore: Firestore.instance));
+                                            cloudStoreService: CloudStoreService(cloudStore: Firestore.instance));
     super.initState();
   }
   
