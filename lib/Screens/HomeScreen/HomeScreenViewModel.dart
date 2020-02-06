@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+
 import 'package:splitter/Services/AuthenticationService.dart';
 import 'package:splitter/Services/CloudStoreService.dart';
 

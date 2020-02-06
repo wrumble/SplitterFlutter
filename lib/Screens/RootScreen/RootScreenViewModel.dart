@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
+
 import 'package:splitter/Models/AuthenticationState.dart';
 import 'package:splitter/Models/User.dart';
 import 'package:splitter/Services/AuthenticationService.dart';
@@ -64,7 +65,6 @@ class RootScreenViewModel implements RootScreenViewModelType {
   }
 
   void onError(error) {
-    print("SPLITTER ERROR: Login Error at RootScreenViewModel: $error");
     setLoggedOut();
   }
 }

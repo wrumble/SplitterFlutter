@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:splitter/Screens/RootScreen/RootScreenViewModel.dart';
 import 'package:splitter/Services/AuthenticationService.dart';
 import 'package:splitter/Services/CloudStoreService.dart';
@@ -22,8 +25,8 @@ class SplitterState extends State<Splitter> {
   RootScreenViewModelType rootViewModel;
   @override
   void initState() {
-        rootViewModel = RootScreenViewModel(authenticationService: AuthenticationService(),
-                                              cloudStoreService: CloudStoreService());
+        rootViewModel = RootScreenViewModel(authenticationService: AuthenticationService(firebaseAuthentication: FirebaseAuth.instance),
+                                            cloudStoreService: CloudStoreService(cloudStore: Firestore.instance));
     super.initState();
   }
   
