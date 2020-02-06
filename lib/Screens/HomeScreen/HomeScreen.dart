@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:splitter/Models/User.dart';
 import 'package:splitter/Widgets/NullWidget.dart';
+
 import 'HomeScreenViewModel.dart';
 
 class HomeScreen extends StatelessWidget {

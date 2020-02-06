@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+
 import 'package:splitter/Widgets/LoginErrorMessage.dart';
 import 'package:splitter/Widgets/LoginTextField.dart';
 import 'package:splitter/Widgets/NullWidget.dart';
 import 'package:splitter/Widgets/PrimaryButton.dart';
 import 'package:splitter/Widgets/SecondaryButton.dart';
 import 'package:splitter/Widgets/WaitingIndicator.dart';
-import 'LoginAndSignupScreenViewModel.dart';
+import 'package:splitter/Screens/LoginAndSignupScreen/LoginAndSignupScreenViewModel.dart';
 
 class LoginAndSignupScreen extends StatelessWidget {
   LoginAndSignupScreen({@required this.viewModel});
