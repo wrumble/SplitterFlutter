@@ -19,7 +19,7 @@ class CloudStoreService implements CloudStoreServiceType {
 
   Future<User> fetchUserWithId(String userId) async {
     try {
-      DocumentSnapshot userDocument = await cloudStore.document("Users/$userId").get();
+      DocumentSnapshot userDocument = await cloudStore.document("users/$userId").get();
       return User.fromJson(userDocument.data);
     } catch (error) {
       print("Error fetching user: $error");
@@ -29,7 +29,7 @@ class CloudStoreService implements CloudStoreServiceType {
 
     Future<User> createUser(User user) async {
     try {
-      await cloudStore.collection("Users")
+      await cloudStore.collection("users")
         .document(user.id)
         .setData({
           'id': user.id,

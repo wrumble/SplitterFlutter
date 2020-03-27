@@ -38,12 +38,16 @@ void main() {
                                     cloudStoreService: cloudStoreService);
   });
 
+  group('Setup', () {
+      test('ViewModel streams seeded correctly on init', () async {
+        expect(viewModel.authenticationState, emits(AuthenticationState.loading));
+        expect(viewModel.userSubject, emits(null));
+        expect(viewModel.userSubject, emits(null));
+      });
+  });
+
   group('AuthenticationState', () {
     group('On Success', () {
-      test('ViewModel Initial AuthenticationState is loading', () async {
-        expect(viewModel.authenticationState, emits(AuthenticationState.loading));
-      });
-
       test('ViewModel AuthenticationState is loggedOut when authService emits loggedOut', () async {
         authenticationServiceState.add(AuthenticationState.loggedOut);
 
