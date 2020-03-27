@@ -24,7 +24,7 @@ class RootScreenViewModel implements RootScreenViewModelType {
   CloudStoreServiceType cloudStoreService;
   
   BehaviorSubject<AuthenticationState> authenticationState = BehaviorSubject<AuthenticationState>();
-  BehaviorSubject<User> userSubject = BehaviorSubject<User>();
+  BehaviorSubject<User> userSubject = BehaviorSubject<User>.seeded(null);
 
   Future<void> listenToAuthenticationState() async {
     authenticationService.authenticationState.listen((authState) {
