@@ -15,7 +15,7 @@ install:
   - echo 'Avoid default Travis CI install step'
 before_script:
     - cd ..
-    - git clone https://github.com/flutter/flutter.git -b stable
+    - git clone https://github.com/flutter/flutter.git -b master
     - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
     - flutter doctor
 script:
@@ -34,6 +34,7 @@ script:
 #   script: '../.travis/publish.sh'
 #   on:
 #     tags: true
+# See here for script etc https://robertohuertas.com/2019/01/20/publish-flutter-package-with-travis/
 cache:
     directories:
     - $HOME/.pub-cache
