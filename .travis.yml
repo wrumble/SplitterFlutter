@@ -20,6 +20,10 @@ before_script:
     - flutter doctor
 script:
     - cd $TRAVIS_BUILD_DIR
+    - echo 'Cleaning project...'
+    - flutter clean
+    - echo 'Updating packages...'
+    - flutter clean
     - echo 'Running linter analysis...'
     - flutter analyze
     - echo 'Running tests...'
