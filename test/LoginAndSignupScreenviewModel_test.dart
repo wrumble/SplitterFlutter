@@ -4,7 +4,6 @@ import 'package:mockito/mockito.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'package:splitter/Models/AuthenticationState.dart';
-import 'package:splitter/Models/User.dart';
 import 'package:splitter/Screens/LoginAndSignupScreen/LoginAndSignupScreenViewModel.dart';
 import 'package:splitter/Services/AuthenticationService.dart';
 import 'package:splitter/Services/CloudStoreService.dart';
