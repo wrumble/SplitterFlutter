@@ -1,5 +1,6 @@
 import 'dart:io' show Platform;
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
@@ -24,6 +25,9 @@ class LoginTextField extends StatelessWidget {
   }
 
   Widget textFieldForPlatform() {
+    if (kIsWeb) {
+      return androidTextField();
+    }
     if (Platform.isIOS) {
       return iosTextField();
     } else {
