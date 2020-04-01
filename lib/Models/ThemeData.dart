@@ -10,7 +10,7 @@ final androidAppThemeData = MaterialAppData(theme: ThemeData(primarySwatch: Colo
                                                              secondaryHeaderColor: Colors.blue,
                                                              canvasColor: Colors.blue,
                                                              backgroundColor: Colors.red,
-                                                             textTheme: TextTheme().copyWith(bodyText1: TextTheme().bodyText1)
+                                                             textTheme: TextTheme().copyWith(bodyText2: TextTheme().bodyText2)
                                                     )
                              );
 
