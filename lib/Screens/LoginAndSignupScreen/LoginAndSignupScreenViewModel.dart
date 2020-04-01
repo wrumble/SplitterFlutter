@@ -20,6 +20,12 @@ abstract class LoginAndSignupScreenViewModelType {
   void onSubmit();
   void toggleView();
   bool isLoginForm();
+  void setFirstName(String firstName);
+  void setLastName(String lastName);
+  void setEmail(String email);
+  void setPassword(String password);
+  String toggleButtonText();
+  String submitButtonText();
 }
 
 class LoginAndSignupScreenViewModel implements LoginAndSignupScreenViewModelType {
@@ -116,5 +122,29 @@ class LoginAndSignupScreenViewModel implements LoginAndSignupScreenViewModelType
 
   bool isLoginForm() {
     return formType.value == FormType.login;
+  }
+
+  void setFirstName(String firstName) {
+    user.firstName = firstName.trim();
+  }
+
+  void setLastName(String lastName) {
+    user.lastName = lastName.trim();
+  }
+
+  void setEmail(String email) {
+    user.email = email.trim();
+  }
+
+  void setPassword(String password) {
+    password = password.trim();
+  }
+
+  String toggleButtonText() {
+    return isLoginForm() ? 'Create an account' : 'Have an account? Sign in';
+  }
+
+  String submitButtonText() {
+    return isLoginForm() ? 'Login' : 'Create account';
   }
 }
