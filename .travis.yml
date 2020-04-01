@@ -12,18 +12,29 @@ addons:
         - libstdc++6
         - fonts-droid
 install:
-    - echo 'Testing SplitterFlutter'
+  - echo 'Avoid default Travis CI install step'
 before_script:
     - cd ..
-    - git clone https://github.com/flutter/flutter.git -b stable
+    - git clone https://github.com/flutter/flutter.git -b master
     - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
     - flutter doctor
 script:
     - cd $TRAVIS_BUILD_DIR
+    - echo 'Getting packages'
+    - flutter packages get
     - echo 'Running linter analysis...'
-    - flutter analyze
+    - flutter analyze --no-pub --no-current-package lib
     - echo 'Running tests...'
     - flutter test
+    # - echo 'Publishing packages'
+    # - flutter packages pub publish --dry-run
+# deploy:
+#   provider: script
+#   skip_cleanup: true
+#   script: '../.travis/publish.sh'
+#   on:
+#     tags: true
+# See here for script etc https://robertohuertas.com/2019/01/20/publish-flutter-package-with-travis/
 cache:
     directories:
     - $HOME/.pub-cache

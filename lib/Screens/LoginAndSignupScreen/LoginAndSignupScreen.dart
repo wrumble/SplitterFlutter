@@ -75,7 +75,7 @@ class LoginAndSignupScreen extends StatelessWidget {
   }
 
   Widget firstNameField() {
-    Function(String) onChanged = (value) => viewModel.user.firstName = value.trim();
+    Function(String) onChanged = (value) => viewModel.setFirstName(value);
       return LoginTextField(Icons.person,
                             'First Name',
                             onChanged,
@@ -83,7 +83,7 @@ class LoginAndSignupScreen extends StatelessWidget {
   }
 
   Widget lastNameField() {
-    Function(String) onChanged = (value) => viewModel.user.lastName = value.trim();
+    Function(String) onChanged = (value) => viewModel.setLastName(value);
     return LoginTextField(Icons.person,
                           'Last Name',
                           onChanged,
@@ -91,7 +91,7 @@ class LoginAndSignupScreen extends StatelessWidget {
   }
 
   Widget emailField() {
-    Function(String) onChanged = (value) => viewModel.user.email = value.trim();
+    Function(String) onChanged = (value) => viewModel.setEmail(value);
     return LoginTextField(Icons.email,
                           'Email',
                           onChanged, 
@@ -99,7 +99,7 @@ class LoginAndSignupScreen extends StatelessWidget {
   }
 
   Widget passwordField() {
-    Function(String) onChanged = (value) => viewModel.password = value.trim();
+    Function(String) onChanged = (value) => viewModel.setPassword(value);
     return LoginTextField(Icons.lock,
                           'Password', 
                           onChanged, 
@@ -107,12 +107,12 @@ class LoginAndSignupScreen extends StatelessWidget {
   }
 
   Widget toggleButton() {
-    String text = viewModel.isLoginForm() ? 'Create an account' : 'Have an account? Sign in';
+    String text = viewModel.toggleButtonText();
     return SecondaryButton(text: text, onPressed: viewModel.toggleView);
   }
 
   Widget submitButton() {
-    String text = viewModel.isLoginForm() ? 'Login' : 'Create account';
+    String text = viewModel.submitButtonText();
     return PrimaryButton(text: text, 
                          onPressed: viewModel.onSubmit);
   }
