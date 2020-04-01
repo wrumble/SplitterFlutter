@@ -19,11 +19,13 @@ before_script:
     - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
     - flutter doctor
 script:
-    - cd $TRAVIS_BUILD_DIR
+    - echo 'Travis build DIR'
+    - echo $TRAVIS_BUILD_DIR
     - echo 'Cleaning project...'
     - flutter clean
     - echo 'Updating packages...'
     - flutter clean
+    - cd $TRAVIS_BUILD_DIR
     - echo 'Running linter analysis...'
     - flutter analyze
     - echo 'Running tests...'
